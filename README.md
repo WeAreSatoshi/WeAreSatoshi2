@@ -20,18 +20,18 @@ WeAreSatoshi is a PoW/PoS-based cryptocurrency.
 Specifications
 --------------
 
-Ticker Symbol: WAS
-Algorithm: X11 POW/POS
-P2P Port: 8922
-RPC Port: 8923
-Total Coins: 40 million coin cap.
-Premine: XXX for WAS v1 to v2 coin swap, 2% for development.
-Block Time: 30 seconds
-PoW Reward: 25 WAS halving every 200,000 blocks until reaching a 1 WAS maintenance reward.
-PoS Interest Schedule:
-1. 5% interest each month for the first 3 months,
-2. 1% per month for the rest of the year,
-3. 3% annually thereafter
+Ticker Symbol: WAS<br />
+Algorithm: X11 POW/POS<br />
+P2P Port: 8922<br />
+RPC Port: 8923<br />
+Total Coins: 40 million coin cap.<br />
+Premine: XXX for WAS v1 to v2 coin swap, 2% for development.<br />
+Block Time: 30 seconds<br />
+PoW Reward: 25 WAS halving every 200,000 blocks until reaching a 1 WAS maintenance reward.<br />
+PoS Interest Schedule:<br />
+1. 5% interest each month for the first 3 months,<br />
+2. 1% per month for the rest of the year,<br />
+3. 3% annually thereafter<br />
 PoS Stake Age: 5 days minimum, 30 days maximum
 
 License
@@ -43,8 +43,8 @@ information or see http://opensource.org/licenses/MIT.
 Copyright
 ---------
 
-Copyright (c) 2014 WeAreSatoshi Developers
-Copyright (c) 2014 cryptcoin Developers
-Copyright (c) 2013-2014 NovaCoin Developers
-Copyright (c) 2011-2012 PPCoin Developers
-Copyright (c) 2009-2014 Bitcoin Developers
+Copyright (c) 2014 WeAreSatoshi Developers<br />
+Copyright (c) 2014 cryptcoin Developers<br />
+Copyright (c) 2013-2014 NovaCoin Developers<br />
+Copyright (c) 2011-2012 PPCoin Developers<br />
+Copyright (c) 2009-2014 Bitcoin Developers<br />
