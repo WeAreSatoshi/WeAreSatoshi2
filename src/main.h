@@ -39,9 +39,9 @@ static const int64_t MAX_MONEY = 40000000 * COIN;
 static const int64_t POW_INITIAL_REWARD = 25 * COIN;
 static const int64_t POW_HALVING_INTERVAL = 200000;
 static const int64_t POW_MINIMUM_REWARD = 1 * COIN;
-static const int64_t COIN_REWARD_STAGE_1 = 79.5 * CENT; // ~5% per month for the 1st 3 months (Note for any readers we aren't giving out 79.5% interest, that is how much it would be if it was running for a full year and not just 3 months.)
-static const int64_t COIN_REWARD_STAGE_2 = 12.6 * CENT; // ~1% per month for the following 9 months
-static const int64_t COIN_REWARD_STAGE_3 = 3 * CENT; // 3% per year normal interest
+static const int64_t COIN_REWARD_STAGE_1 = 0.795 * COIN; // ~5% per month for the 1st 3 months (Note for any readers we aren't giving out 79.5% interest, that is how much it would be if it was running for a full year and not just 3 months.)
+static const int64_t COIN_REWARD_STAGE_2 = 0.126 * COIN; // ~1% per month for the following 9 months
+static const int64_t COIN_REWARD_STAGE_3 = 0.03 * COIN; // 3% per year normal interest
 int64_t GetProofOfStakeRewardPercent(int nHeight);
 
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
@@ -574,7 +574,10 @@ public:
         {
             nValueOut += txout.nValue;
             if (!MoneyRange(txout.nValue) || !MoneyRange(nValueOut))
+            {
+                printf("CTransaction::GetValueOut() : value out of range: %s / %s\n", FormatMoney(txout.nValue).c_str(), FormatMoney(nValueOut).c_str());
                 throw std::runtime_error("CTransaction::GetValueOut() : value out of range");
+            }
         }
         return nValueOut;
     }
