@@ -1211,6 +1211,8 @@ void ThreadDNSAddressSeed2(void* parg)
 static const char * pnSeed[] =
 {
 	"162.243.15.107",
+	"107.170.104.208",
+	"192.99.37.224"
 };
 
 void DumpAddresses()
