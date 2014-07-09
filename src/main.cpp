@@ -968,7 +968,8 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan)
 int64_t GetProofOfWorkReward(int nHeight, int64_t nFees)
 {
     if (nHeight == 1)
-        return 500 * COIN; // Coins for the coin swap
+        return 32930025 * COIN; // Coins for the coin swap
+        /* WAS v1 stops producing PoW rewards at block 517,200 after minting 32,930,025,000 WAS. */
     if (nHeight == 2)
         return 800000 * COIN; // 2% pre-mine for development
 	
@@ -2506,19 +2507,19 @@ bool LoadBlockIndex(bool fAllowNew)
         if (!fAllowNew)
             return false;
 
-        const char* pszTimestamp = "CryptCoin WHAT BUTUN IS MANNAY? Lets see. Bitcoin paypal integration soon";
+        const char* pszTimestamp = "#WeAreSatoshi v2.0 - 2014-07-09 - JTn1";
         CTransaction txNew;
-        txNew.nTime = 1399444491;
+        txNew.nTime = 1404896400;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
-        txNew.vin[0].scriptSig = CScript() << 0 << CBigNum(42) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
+        txNew.vin[0].scriptSig = CScript() << 58 << CBigNum(21011991) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
         txNew.vout[0].SetEmpty();
         CBlock block;
         block.vtx.push_back(txNew);
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1400640666;
+        block.nTime    = 1404896400;
         block.nBits    = bnProofOfWorkLimit.GetCompact();
         block.nNonce   = 681120;
 		if(fTestNet)
@@ -2547,7 +2548,7 @@ bool LoadBlockIndex(bool fAllowNew)
         printf("block.nNonce = %u \n", block.nNonce);
 
         //// debug print
-        assert(block.hashMerkleRoot == uint256("0x79f5016525e20d38dfb130017222aaa7da0631c8db8e3b9c969ab3c0d1a5d632"));
+        assert(block.hashMerkleRoot == uint256("0x9ce8d9c9af870cbed581d216ec0b1564092de98d213ce38e32d867d833729cbf"));
         block.print();
         assert(block.GetHash() == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet));
         assert(block.CheckBlock());
