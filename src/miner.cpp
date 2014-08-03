@@ -529,7 +529,7 @@ void StakeMiner(CWallet *pwallet)
     RenameThread("WeAreSatoshi-miner");
 
     bool fTryToSync = true;
-    int64 nextAllowedBlock = 0;
+    int64_t nextAllowedBlock = 0;
 
     while (!fShutdown)
     {        
