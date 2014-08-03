@@ -529,18 +529,20 @@ void StakeMiner(CWallet *pwallet)
     RenameThread("WeAreSatoshi-miner");
 
     bool fTryToSync = true;
+    int64 nextAllowedBlock = 0;
 
-    while (true)
-    {
-        if (fShutdown)
-            return;
+    while (!fShutdown)
+    {        
+        if (GetTime() < nextAllowedBlock) {
+            MilliSleep(1000);
+            continue;
+        }
 
         while (pwallet->IsLocked())
         {
             nLastCoinStakeSearchInterval = 0;
             MilliSleep(1000);
-            if (fShutdown)
-                return;
+            continue;
         }
 
         while (vNodes.empty() || IsInitialBlockDownload())
@@ -548,8 +550,7 @@ void StakeMiner(CWallet *pwallet)
             nLastCoinStakeSearchInterval = 0;
             fTryToSync = true;
             MilliSleep(1000);
-            if (fShutdown)
-                return;
+            continue;
         }
 
         if (fTryToSync)
@@ -574,7 +575,10 @@ void StakeMiner(CWallet *pwallet)
         if (pblock->SignBlock(*pwallet, nFees))
         {
             SetThreadPriority(THREAD_PRIORITY_NORMAL);
-            CheckStake(pblock.get(), *pwallet);
+            if (CheckStake(pblock.get(), *pwallet)) {
+            	// We don't want to flood the network with a metric ton of PoS blocks and get a bunch of orphans, so we send them every 30-60 seconds maximum.
+            	nextAllowedBlock = GetTime() + 30 + GetRandInt(30);
+            }
             SetThreadPriority(THREAD_PRIORITY_LOdrm);
             MilliSleep(500);
         }
