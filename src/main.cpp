@@ -49,7 +49,7 @@ unsigned int GetTargetSpacing(int nHeight) {
 	if (nHeight < nHardfork1Block)
 		return 30;
 		
-	return 60;
+	return 120;
 }
 
 int nCoinbaseMaturity = 50;
