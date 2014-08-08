@@ -40,10 +40,17 @@ CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // "standard" scrypt target limit
 CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
-unsigned int nTargetSpacing = 30; // 30 seconds
+const int nHardfork1Block = 140000;
 unsigned int nStakeMinAge = 60 * 60 * 24 * 5; // 5 days
 unsigned int nStakeMaxAge = 60 * 60 * 24 * 30;  // 30 days
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
+
+unsigned int GetTargetSpacing(int nHeight) {
+	if (nHeight < nHardfork1Block)
+		return 30;
+		
+	return 60;
+}
 
 int nCoinbaseMaturity = 50;
 CBlockIndex* pindexGenesisBlock = NULL;
@@ -988,9 +995,10 @@ int64_t GetProofOfWorkReward(int nHeight, int64_t nFees)
     return nSubsidy + nFees;
 }
 
-static const int DAILY_BLOCKCOUNT = 2880;
-static const int REWARD_LIMIT_STAGE_1 = 2880 * 90;
-static const int REWARD_LIMIT_STAGE_2 = 2880 * 365;
+static const int DAILY_BLOCKCOUNT_ORIG = 5760;
+static const int DAILY_BLOCKCOUNT_NEW = 1440;
+static const int REWARD_LIMIT_STAGE_1 = (DAILY_BLOCKCOUNT_ORIG * 33) + (DAILY_BLOCKCOUNT_NEW * 57);
+static const int REWARD_LIMIT_STAGE_2 = (DAILY_BLOCKCOUNT_ORIG * 33) + (DAILY_BLOCKCOUNT_NEW * 332);
 int64_t GetProofOfStakeRewardPercent(int nHeight)
 {
     int64_t nRewardCoinYear = COIN_REWARD_STAGE_3;
@@ -1077,6 +1085,7 @@ static unsigned int GetNextTargetRequired_(const CBlockIndex* pindexLast, bool f
     if (pindexPrevPrev->pprev == NULL)
         return bnTargetLimit.GetCompact(); // second block
 
+		unsigned int nTargetSpacing = GetTargetSpacing(pindexLast->nHeight);
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
     if (nActualSpacing < 0)
         nActualSpacing = nTargetSpacing;
@@ -2846,7 +2855,14 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrme;
+        
+        bool badVersion = false;
+        if (nBestHeight >= nHardfork1Block && pfrom->nVersion < 20002)
+        	badVersion = true;
         if (pfrom->nVersion < MIN_PROTO_VERSION)
+        	badVersion = true;
+
+        if (badVersion)
         {
             // Since February 20, 2012, the protocol is initiated at version 209,
             // and earlier versions are no longer supported
@@ -2855,8 +2871,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             return false;
         }
 
-        if (pfrom->nVersion == 10300)
-            pfrom->nVersion = 300;
         if (!vRecv.empty())
             vRecv >> addrFrom >> nNonce;
         if (!vRecv.empty())

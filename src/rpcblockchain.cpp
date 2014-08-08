@@ -11,6 +11,7 @@ using namespace std;
 
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, json_spirit::Object& entry);
 extern enum Checkpoints::CPMode CheckpointsMode;
+extern unsigned int GetTargetSpacing(int nHeight);
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
@@ -49,7 +50,8 @@ double GetPoWMHashPS()
 //        return 0;
 
     int nPoWInterval = 72;
-    int64_t nTargetSpacingWorkMin = 30, nTargetSpacingWork = 30;
+    unsigned int nTargetSpacing = GetTargetSpacing(nBestHeight);
+    int64_t nTargetSpacingWorkMin = nTargetSpacing, nTargetSpacingWork = nTargetSpacing;
 
     CBlockIndex* pindex = pindexGenesisBlock;
     CBlockIndex* pindexPrevWork = pindexGenesisBlock;

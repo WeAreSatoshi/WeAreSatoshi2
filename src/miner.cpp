@@ -577,7 +577,7 @@ void StakeMiner(CWallet *pwallet)
             SetThreadPriority(THREAD_PRIORITY_NORMAL);
             if (CheckStake(pblock.get(), *pwallet)) {
             	// We don't want to flood the network with a metric ton of PoS blocks and get a bunch of orphans, so we send them every 30-60 seconds maximum.
-            	nextAllowedBlock = GetTime() + 30 + GetRandInt(30);
+            	nextAllowedBlock = GetTime() + 60 + GetRandInt(60);
             }
             SetThreadPriority(THREAD_PRIORITY_LOdrm);
             MilliSleep(500);
