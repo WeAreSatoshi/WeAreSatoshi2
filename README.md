@@ -11,20 +11,20 @@ out collectively by the network. WeAreSatoshi is also the name of the open sourc
 software which enables the use of this currency.
 
 For more information, as well as an immediately useable, binary version of
-the WeAreSatoshi client sofware, see https://bitcointalk.org/index.php?topic=661588.0
+the WeAreSatoshi client sofware, see https://bitcointalk.org/index.php?topic=724727.0
 
 WeAreSatoshi is a PoW/PoS-based cryptocurrency.
 
 Specifications
 --------------
 
-Ticker Symbol: WAS<br />
+Ticker Symbol: WSX<br />
 Algorithm: X11 POW/POS<br />
 P2P Port: 8922<br />
 RPC Port: 8923<br />
-Total Coins: 40 million coin cap.<br />
-Premine: Coins for WAS v1 to v2 coin swap, 2% for development.<br />
-Block Time: 30 seconds<br />
+Total Coins: 22 million coin cap.<br />
+Premine: Coins for WAS v1 to WSX coin swap, 2% for development.<br />
+Block Time: 60 seconds<br />
 PoW Reward: 25 WAS halving every 200,000 blocks until reaching a 1 WAS maintenance reward.<br />
 PoS Interest Schedule:<br />
 1. 5% interest each month for the first 3 months,<br />
