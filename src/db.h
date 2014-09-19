@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include </opt/local/include/db48/db_cxx.h>
+#include <db_cxx.h>
 
 class CAddress;
 class CAddrman;
