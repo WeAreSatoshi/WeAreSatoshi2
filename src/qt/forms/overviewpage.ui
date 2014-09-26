@@ -250,8 +250,14 @@
        </property>
       </spacer>
      </item>
-     <item>
+     <item alignment="Qt::AlignHCenter">
       <widget class="QLabel" name="label_2">
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>300</height>
+        </size>
+       </property>
        <property name="autoFillBackground">
         <bool>true</bool>
        </property>
@@ -259,10 +265,10 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap>:/icons/drmbg</pixmap>
+        <pixmap resource="../bitcoin.qrc">:/icons/drmbg</pixmap>
        </property>
        <property name="scaledContents">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="margin">
         <number>0</number>
@@ -361,6 +367,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../bitcoin.qrc"/>
+ </resources>
  <connections/>
 </ui>
