@@ -1143,7 +1143,7 @@ void MapPort()
 // The first name is used as information source for addrman.
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
-    {"ds.was.club", "ds.was.club"},
+    {"wsx.dnsseed.crypto2.net", "wsx.dnsseed.crypto2.net"},
 };
 
 void ThreadDNSAddressSeed(void* parg)
@@ -1342,6 +1342,24 @@ void ThreadOpenConnections2(void* parg)
         }
     }
 
+        // Add seed nodes
+    if (!fTestNet)
+    {
+        std::vector<CAddress> vAdd;
+        for (unsigned int i = 0; i < ARRAYLEN(pnSeed); i++)
+        {
+            // It'll only connect to one or two seed nodes because once it connects,
+            // it'll get a pile of addresses with newer timestamps.
+            // Seed nodes are given a random 'last seen time' of between one and two
+            // weeks ago.
+            const int64_t nOneWeek = 7*24*60*60;
+            CAddress addr(CService(pnSeed[i], GetDefaultPort()));
+            addr.nTime = GetTime()-GetRand(nOneWeek)-nOneWeek;
+            vAdd.push_back(addr);
+        }
+        addrman.Add(vAdd, CNetAddr("127.0.0.1"));
+    }
+
     // Initiate network connections
     int64_t nStart = GetTime();
     while (true)
@@ -1360,24 +1378,6 @@ void ThreadOpenConnections2(void* parg)
         vnThreadsRunning[THREAD_OPENCONNECTIONS]++;
         if (fShutdown)
             return;
-
-        // Add seed nodes if IRC isn't working
-        if (addrman.size() < 10 && (GetTime() - nStart > 30) && !fTestNet)
-        {
-            std::vector<CAddress> vAdd;
-            for (unsigned int i = 0; i < ARRAYLEN(pnSeed); i++)
-            {
-                // It'll only connect to one or two seed nodes because once it connects,
-                // it'll get a pile of addresses with newer timestamps.
-                // Seed nodes are given a random 'last seen time' of between one and two
-                // weeks ago.
-                const int64_t nOneWeek = 7*24*60*60;
-                CAddress addr(CService(pnSeed[i], GetDefaultPort()));
-                addr.nTime = GetTime()-GetRand(nOneWeek)-nOneWeek;
-                vAdd.push_back(addr);
-            }
-            addrman.Add(vAdd, CNetAddr("127.0.0.1"));
-        }
 
         //
         // Choose an address to connect to based on most recently seen
