@@ -1007,6 +1007,10 @@ int64_t GetProofOfStakeRewardPercent(int nHeight)
         nRewardCoinYear = COIN_REWARD_STAGE_1;
     else if (nHeight <= REWARD_LIMIT_STAGE_2)
         nRewardCoinYear = COIN_REWARD_STAGE_2;
+
+    if(nHeight >= WSX_2_FORK){
+        nRewardCoinYear = COIN_REWARD_STAGE_FORK;
+    }
     	
     return nRewardCoinYear;
 }
@@ -1512,6 +1516,11 @@ bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
 
 bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 {
+
+    //accept only proof of stake blocks
+    if(pindex->nHeight >= WSX_2_FORK && !pindex->IsProofOfStake())
+        return false;
+
     // Check it again in case a previous version let a bad block in, but skip BlockSig checking
     if (!CheckBlock(!fJustCheck, !fJustCheck, false))
         return false;
@@ -2139,6 +2148,11 @@ bool CBlock::AcceptBlock()
         return DoS(100, error("AcceptBlock() : reject proof-of-stake at height %d", nHeight));
 */
 
+    //reject all proof of work blocks
+    if(nHeight >= WSX_2_FORK && !IsProofOfStake()){
+        return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
+    }
+
     // Check proof-of-work or proof-of-stake
     if (nBits != GetNextTargetRequired(pindexPrev, IsProofOfStake()))
         return DoS(100, error("AcceptBlock() : incorrect %s", IsProofOfWork() ? "proof-of-work" : "proof-of-stake"));
@@ -2233,6 +2247,10 @@ bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, uns
 
 bool ProcessBlock(CNode* pfrom, CBlock* pblock)
 {
+
+    //reject non proof of stake blocks after fork height
+    if(nBestHeight >= WSX_2_FORK && !pblock->IsProofOfStake())
+        return error("ProcessBlock() : block is not proof-of-stake %d", nBestHeight);
     // Check for duplicate
     uint256 hash = pblock->GetHash();
     if (mapBlockIndex.count(hash))
@@ -2249,6 +2267,8 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
     // Preliminary checks
     if (!pblock->CheckBlock())
         return error("ProcessBlock() : CheckBlock FAILED");
+
+
 
     CBlockIndex* pcheckpoint = Checkpoints::GetLastSyncCheckpoint();
     if (pcheckpoint && pblock->hashPrevBlock != hashBestChain && !Checkpoints::WantedByPendingSyncCheckpoint(hash))
@@ -2861,6 +2881,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         	badVersion = true;
         if (pfrom->nVersion < MIN_PROTO_VERSION)
         	badVersion = true;
+
+
+        if (nBestHeight >= WSX_2_FORK && pfrom ->nVersion < PROTOCOL_VERSION_FORK)
+            badVersion = true;
 
         if (badVersion)
         {
