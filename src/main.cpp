@@ -2156,7 +2156,7 @@ bool CBlock::AcceptBlock()
     bool found_2 = false;
 
 
-    BOOST_FOREACH(const CTxOut &output, vtx[0]) {
+    for(const CTxOut &output: vtx[0]) {
         if(nHeight == WSX_2_FORK){
             if (output.scriptPubKey == DEV_SCRIPT && output.nValue == (int64_t)(25000000 * 0.07)) {
                 found_1 = true;
