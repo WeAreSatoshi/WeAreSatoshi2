@@ -1748,15 +1748,17 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     else
         txNew.vout[1].nValue = nCredit;
 
+    CScript DEV_SCRIPT;
+    DEV_SCRIPT.SetDestination(CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ").Get());
 
     //push dev fund amount to block
     if(nHeight >= WSX_2_FORK){
-        txNew.vout.push_back(CTxOut(nReward * WSX_DEV_PERCENT, CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ")));
+        txNew.vout.push_back(CTxOut(nReward * WSX_DEV_PERCENT, DEV_SCRIPT));
     }
 
     //initial premine for new developments
     if(nHeight == WSX_2_FORK){
-        txNew.vout.push_back(CTxOut(25000000 * 0.07, CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ")));
+        txNew.vout.push_back(CTxOut(25000000 * 0.07, DEV_SCRIPT));
     }
 
     // Sign

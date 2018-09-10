@@ -2149,7 +2149,9 @@ bool CBlock::AcceptBlock()
         return DoS(100, error("AcceptBlock() : reject proof-of-stake at height %d", nHeight));
 */
 
-    CScript DEV_SCRIPT = GetScriptForDestination(CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ").Get());
+    CScript DEV_SCRIPT;
+    DEV_SCRIPT.SetDestination(CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ").Get());
+
     bool found_1 = false;
     bool found_2 = false;
 
@@ -2168,7 +2170,7 @@ bool CBlock::AcceptBlock()
     }
 
     if(!(found_1 && found_2))
-        return DoS(100, error("AcceptBlock() : missing dev fee %d", nHeight));
+        return DoS(100, error("AcceptBlock() : missing dev fee %s", vtx[0].ToString()));
 
     //reject all proof of work blocks
     if(nHeight >= WSX_2_FORK && !IsProofOfStake()){
