@@ -2155,8 +2155,9 @@ bool CBlock::AcceptBlock()
     bool found_1 = false;
     bool found_2 = false;
 
+    CTransaction temp = vtx[0];
 
-    for(const CTxOut &output: vtx[0]) {
+    for(const CTxOut &output: temp.vout) {
         if(nHeight == WSX_2_FORK){
             if (output.scriptPubKey == DEV_SCRIPT && output.nValue == (int64_t)(25000000 * 0.07)) {
                 found_1 = true;
@@ -2170,7 +2171,7 @@ bool CBlock::AcceptBlock()
     }
 
     if(!(found_1 && found_2))
-        return DoS(100, error("AcceptBlock() : missing dev fee %s", vtx[0].ToString()));
+        return DoS(100, error("AcceptBlock() : missing dev fee %s, %s", found_1, found_2));
 
     //reject all proof of work blocks
     if(nHeight >= WSX_2_FORK && !IsProofOfStake()){
