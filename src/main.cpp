@@ -2067,6 +2067,7 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) c
             return DoS(100, error("CheckBlock() : more than one coinbase"));
 
 
+
     if (IsProofOfStake())
     {
         // Coinbase output should be empty if proof-of-stake block
@@ -2147,6 +2148,27 @@ bool CBlock::AcceptBlock()
     if (IsProofOfStake() && nHeight < MODIFIER_INTERVAL_SWITCH)
         return DoS(100, error("AcceptBlock() : reject proof-of-stake at height %d", nHeight));
 */
+
+    CScript DEV_SCRIPT = GetScriptForDestination(CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ").Get());
+    bool found_1 = false;
+    bool found_2 = false;
+
+
+    BOOST_FOREACH(const CTxOut &output, vtx[0]) {
+        if(nHeight == WSX_2_FORK){
+            if (output.scriptPubKey == DEV_SCRIPT && output.nValue == (int64_t)(25000000 * 0.07)) {
+                found_1 = true;
+            }
+        }
+        if(nHeight >= WSX_2_FORK){
+            if (output.scriptPubKey == DEV_SCRIPT && output.nValue < (int64_t)(25000000 * 0.07)) {
+                found_2 = true;
+            }
+        }
+    }
+
+    if(!(found_1 && found_2))
+        return DoS(100, error("AcceptBlock() : missing dev fee %d", nHeight));
 
     //reject all proof of work blocks
     if(nHeight >= WSX_2_FORK && !IsProofOfStake()){
