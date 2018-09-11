@@ -2155,6 +2155,9 @@ bool CBlock::AcceptBlock()
     bool found_1 = false;
     bool found_2 = false;
 
+    if(nHeight != WSX_2_FORK)
+	    found_1 = true;
+	
     CTransaction temp = vtx[0];
 
     for(const CTxOut &output: temp.vout) {
