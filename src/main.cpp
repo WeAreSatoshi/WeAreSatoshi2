@@ -1025,6 +1025,9 @@ int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees)
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRId64" nRewardCoinYear=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nCoinAge, nRewardCoinYear);
 
+	if(nHeight == WSX_2_FORK)
+		nSubsidy += 25000000 * 0.07;
+	
     return nSubsidy + nFees;
 }
 
@@ -2153,10 +2156,6 @@ bool CBlock::AcceptBlock()
     DEV_SCRIPT.SetDestination(CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ").Get());
 
     bool found_1 = false;
-    bool found_2 = false;
-
-    if(nHeight != WSX_2_FORK)
-	    found_1 = true;
 	
     CTransaction temp = vtx[0];
 
@@ -2169,17 +2168,16 @@ bool CBlock::AcceptBlock()
 		}
 		if(nHeight >= WSX_2_FORK){
 		    if (output.scriptPubKey == DEV_SCRIPT && output.nValue < (int64_t)(25000000 * 0.07)) {
-			found_2 = true;
+			found_1 = true;
 		    }
 		}
 	    }
     }
 	else{
 		found_1 = true;
-		found_2 = true;
 	}
 
-    if(!(found_1 && found_2))
+    if(!(found_1))
         return DoS(100, error("AcceptBlock() : missing dev fee %s, %s", found_1, found_2));
 
     //reject all proof of work blocks
