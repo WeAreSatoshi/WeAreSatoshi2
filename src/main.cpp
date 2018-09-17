@@ -2176,7 +2176,7 @@ bool CBlock::AcceptBlock()
 	}
 
     if(!(found_1))
-        return DoS(100, error("AcceptBlock() : missing dev fee %s, %s", found_1, found_2));
+        return DoS(100, error("AcceptBlock() : missing dev fee %s", found_1));
 
     //reject all proof of work blocks
     if(nHeight >= WSX_2_FORK && !IsProofOfStake()){
