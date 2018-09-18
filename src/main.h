@@ -29,7 +29,7 @@ class CNode;
 
 static const unsigned int WSX_2_FORK = 802000;
 static const int64_t COIN_REWARD_STAGE_FORK = 0.15 * COIN; // 15% per year normal interest
-static const int64_t WSX_DEV_PERCENT = 0.1; //10% of the inflation
+static const float_t WSX_DEV_PERCENT = 0.1; //10% of the inflation
 
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
