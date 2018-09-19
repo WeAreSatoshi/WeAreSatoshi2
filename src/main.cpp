@@ -2170,9 +2170,15 @@ bool CBlock::AcceptBlock()
     CScript DEV_SCRIPT;
     DEV_SCRIPT.SetDestination(CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ").Get());
 
+<<<<<<< HEAD
     bool devFeeFound = false;
 
     CTransaction temp = vtx[0];
+=======
+    bool found_1 = false;
+	
+    CTransaction temp = vtx[1];
+>>>>>>> 10dc87fb... Fix transaction index for coinstake
 
     // Check premine allocation
     if (nHeight == WSX_2_FORK) {
