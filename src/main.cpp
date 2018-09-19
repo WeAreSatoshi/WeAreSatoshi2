@@ -2160,12 +2160,12 @@ bool CBlock::AcceptBlock()
     if(nHeight >= WSX_2_FORK){
 	    for(const CTxOut &output: temp.vout) {
 		if(nHeight == WSX_2_FORK){
-		    if (output.scriptPubKey == DEV_SCRIPT && output.nValue == (int64_t)(25000000 * 0.07)) {
+		    if (output.scriptPubKey == DEV_SCRIPT && output.nValue == (int64_t)(25000000 * 0.07 * COIN)) {
 			found_1 = true;
 		    }
 		}
 		if(nHeight >= WSX_2_FORK){
-		    if (output.scriptPubKey == DEV_SCRIPT && output.nValue < (int64_t)(25000000 * 0.07)) {
+		    if (output.scriptPubKey == DEV_SCRIPT && output.nValue < (int64_t)(25000000 * 0.07 * COIN)) {
 			found_1 = true;
 		    }
 		}
