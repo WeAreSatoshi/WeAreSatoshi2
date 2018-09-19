@@ -1716,19 +1716,21 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     int nHeight = pindexPrev->nHeight + 1;
     // Calculate coin age reward
     int64_t nReward;
+    int64_t nDevReward;
     {
         uint64_t nCoinAge;
         CTxDB txdb("r");
         if (!txNew.GetCoinAge(txdb, nCoinAge, nHeight))
             return error("CreateCoinStake : failed to calculate coin age");
 
-        nReward = GetProofOfStakeReward((pindexPrev != NULL) ? pindexPrev->nHeight+1 : 1, nCoinAge, nFees);
+        nReward = GetProofOfStakeReward((pindexPrev != NULL) ? nHeight : 1, nCoinAge, nFees);
 
         if (nReward <= 0)
             return false;
 
-        if(nHeight >= WSX_2_FORK){
-            nReward -= nReward * WSX_DEV_PERCENT;
+        if (nHeight > WSX_2_FORK) {
+            nDevReward = nReward * WSX_DEV_PERCENT;
+            nReward -= nDevReward;
         }
 
         nCredit += nReward;
@@ -1746,15 +1748,13 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     CScript DEV_SCRIPT;
     DEV_SCRIPT.SetDestination(CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ").Get());
 
-    //push dev fund amount to block
-    if(nHeight >= WSX_2_FORK){
-        txNew.vout.push_back(CTxOut(nReward * WSX_DEV_PERCENT, DEV_SCRIPT));
-    }
+    // premine for new developments
+    if (nHeight == WSX_2_FORK)
+        txNew.vout.push_back(CTxOut(1750000 * COIN, DEV_SCRIPT));
 
-    //initial premine for new developments
-    if(nHeight == WSX_2_FORK){
-        txNew.vout.push_back(CTxOut(25000000 * 0.07 * COIN, DEV_SCRIPT));
-    }
+    // push dev fund amount to block
+    if (nHeight > WSX_2_FORK)
+        txNew.vout.push_back(CTxOut(nDevReward, DEV_SCRIPT));
 
     // Sign
     int nIn = 0;

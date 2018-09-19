@@ -1017,19 +1017,18 @@ static const int DAILY_BLOCKCOUNT_ORIG = 5760;
 static const int DAILY_BLOCKCOUNT_NEW = 1440;
 static const int REWARD_LIMIT_STAGE_1 = (DAILY_BLOCKCOUNT_ORIG * 33) + (DAILY_BLOCKCOUNT_NEW * 57);
 static const int REWARD_LIMIT_STAGE_2 = (DAILY_BLOCKCOUNT_ORIG * 33) + (DAILY_BLOCKCOUNT_NEW * 332);
+
 int64_t GetProofOfStakeRewardPercent(int nHeight)
 {
     int64_t nRewardCoinYear = COIN_REWARD_STAGE_3;
-    
-    if (nHeight <= REWARD_LIMIT_STAGE_1)
+
+    if (nHeight >= WSX_2_FORK)
+        nRewardCoinYear = COIN_REWARD_STAGE_FORK;
+    else if (nHeight <= REWARD_LIMIT_STAGE_1)
         nRewardCoinYear = COIN_REWARD_STAGE_1;
     else if (nHeight <= REWARD_LIMIT_STAGE_2)
         nRewardCoinYear = COIN_REWARD_STAGE_2;
 
-    if(nHeight >= WSX_2_FORK){
-        nRewardCoinYear = COIN_REWARD_STAGE_FORK;
-    }
-    	
     return nRewardCoinYear;
 }
 
@@ -1037,12 +1036,11 @@ int64_t GetProofOfStakeRewardPercent(int nHeight)
 int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees)
 {
     int64_t nRewardCoinYear = GetProofOfStakeRewardPercent(nHeight);
-
     int64_t nSubsidy = nCoinAge * nRewardCoinYear / 365 / COIN;
 
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRId64" nRewardCoinYear=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nCoinAge, nRewardCoinYear);
-	
+
     return nSubsidy + nFees;
 }
 
@@ -1534,9 +1532,8 @@ bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
 
 bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 {
-
     //accept only proof of stake blocks
-    if(pindex->nHeight >= WSX_2_FORK && !pindex->IsProofOfStake())
+    if (pindex->nHeight >= WSX_2_FORK && !pindex->IsProofOfStake())
         return false;
 
     // Check it again in case a previous version let a bad block in, but skip BlockSig checking
@@ -1639,9 +1636,11 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
         int64_t nCalculatedStakeReward = GetProofOfStakeReward(pindex->nHeight, nCoinAge, nFees);
 
-	if(pindex->nHeight != WSX_2_FORK)
-             if (nStakeReward > nCalculatedStakeReward)
-                 return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%"PRId64" vs calculated=%"PRId64")", nStakeReward, nCalculatedStakeReward));
+        if (pindex->nHeight > WSX_2_FORK)
+            nCalculatedStakeReward -= nCalculatedStakeReward * WSX_DEV_PERCENT;
+
+        if (nStakeReward > nCalculatedStakeReward)
+            return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%"PRId64" vs calculated=%"PRId64")", nStakeReward, nCalculatedStakeReward));
     }
 
     // ppcoin: track money supply and mint amount info
@@ -2171,35 +2170,41 @@ bool CBlock::AcceptBlock()
     CScript DEV_SCRIPT;
     DEV_SCRIPT.SetDestination(CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ").Get());
 
-    bool found_1 = false;
-	
+    bool devFeeFound = false;
+
     CTransaction temp = vtx[0];
 
-    if(nHeight >= WSX_2_FORK){
-	    for(const CTxOut &output: temp.vout) {
-		if(nHeight == WSX_2_FORK){
-		    if (output.scriptPubKey == DEV_SCRIPT && output.nValue == (int64_t)(25000000 * 0.07 * COIN)) {
-			found_1 = true;
-		    }
-		}
-		if(nHeight >= WSX_2_FORK){
-		    if (output.scriptPubKey == DEV_SCRIPT && output.nValue < (int64_t)(25000000 * 0.07 * COIN)) {
-			found_1 = true;
-		    }
-		}
-	    }
+    // Check premine allocation
+    if (nHeight == WSX_2_FORK) {
+        bool foundPremine = false;
+        for (const CTxOut &output:  vtx[0].vout) {
+            if (output.scriptPubKey == DEV_SCRIPT && output.nValue == 1750000 * COIN) {
+                foundPremine = true;
+                break;
+            }
+        }
+
+        if (!foundPremine)
+            return DoS(100, error("AcceptBlock() : missing premine script"));
     }
-	else{
-		found_1 = true;
-	}
 
-    if(!(found_1))
-        return DoS(100, error("AcceptBlock() : missing dev fee %s", found_1));
+    // Check dev fee allocation
+    if (nHeight > WSX_2_FORK) {
+        bool foundDevFee = false;
+        for (const CTxOut &output:  vtx[0].vout) {
+            if (output.scriptPubKey == DEV_SCRIPT) {
+                foundDevFee = true;
+                break;
+            }
+        }
 
-    //reject all proof of work blocks
-    if(nHeight >= WSX_2_FORK && !IsProofOfStake()){
+        if (!foundDevFee)
+            return DoS(100, error("AcceptBlock() : missing dev fee nHeight=%d", nHeight));
+    }
+
+    // reject all proof of work blocks
+    if (nHeight >= WSX_2_FORK && !IsProofOfStake())
         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
-    }
 
     // Check proof-of-work or proof-of-stake
     if (nBits != GetNextTargetRequired(pindexPrev, IsProofOfStake()))
@@ -2295,10 +2300,10 @@ bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, uns
 
 bool ProcessBlock(CNode* pfrom, CBlock* pblock)
 {
-
-    //reject non proof of stake blocks after fork height
-    if(nBestHeight >= WSX_2_FORK && !pblock->IsProofOfStake())
+    // reject non proof of stake blocks after fork height
+    if (nBestHeight >= WSX_2_FORK && !pblock->IsProofOfStake())
         return error("ProcessBlock() : block is not proof-of-stake %d", nBestHeight);
+
     // Check for duplicate
     uint256 hash = pblock->GetHash();
     if (mapBlockIndex.count(hash))
@@ -2922,7 +2927,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrme;
-        
+
         bool badVersion = false;
         if (nBestHeight >= nHardfork1Block && pfrom->nVersion < 20002)
         	badVersion = true;
@@ -3207,7 +3212,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                     if (inv.hash == pfrom->hashContinue)
                     {
                         // ppcoin: send latest proof-of-work block to allow the
-                        // download node to accept as orphan (proof-of-stake 
+                        // download node to accept as orphan (proof-of-stake
                         // block might be rejected by stake connection check)
                         vector<CInv> vInv;
                         vInv.push_back(CInv(MSG_BLOCK, GetLastBlockIndex(pindexBest, false)->GetBlockHash()));
