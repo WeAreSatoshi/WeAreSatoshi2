@@ -41,14 +41,12 @@ CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
 const int nHardfork1Block = 140000;
-unsigned int nStakeMinAge = 60 * 60 * 24 * 5; // 5 days
-unsigned int nStakeMaxAge = 60 * 60 * 24 * 30;  // 30 days
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
 
 unsigned int GetTargetSpacing(int nHeight) {
 	if (nHeight < nHardfork1Block)
 		return 30;
-		
+
 	return 120;
 }
 
@@ -83,6 +81,26 @@ int64_t nReserveBalance = 0;
 int64_t nMinimumInputValue = 0;
 
 extern enum Checkpoints::CPMode CheckpointsMode;
+
+// Staking check functions
+int StakeMinAge(int nHeight)
+{
+    if (fTestNet)
+        return 20 * 60; // test net min age is 20 min
+
+    if (nHeight >= WSX_2_FORK)
+        return 60 * 60; // 1 hour
+
+    return 60 * 60 * 24 * 5; // 5 days
+}
+
+int StakeMaxAge(int nHeight)
+{
+    if (nHeight >= WSX_2_FORK)
+        return 60 * 60 * 24 * 7; // 7 days
+
+    return 60 * 60 * 24 * 30;  // 30 days
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -979,18 +997,18 @@ int64_t GetProofOfWorkReward(int nHeight, int64_t nFees)
         /* WAS v1 stops producing PoW rewards at block 517,200 after minting 32,930,025,000 WAS. */
     if (nHeight == 2)
         return 800000 * COIN; // 2% pre-mine for development
-	
+
     int64_t nSubsidy = POW_INITIAL_REWARD;
     int halving = nHeight / POW_HALVING_INTERVAL;
     nSubsidy >>= halving;
-    
+
     // Maintenance phase: Subsidy reaches minimum reward
     if (halving > 10 || nSubsidy < POW_MINIMUM_REWARD)
 			nSubsidy = POW_MINIMUM_REWARD;
 
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfWorkReward() : create=%s nSubsidy=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nSubsidy);
-	
+
     // Network is rewarded for transaction processing with transaction fees and the subsidy
     return nSubsidy + nFees;
 }
@@ -1616,7 +1634,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     {
         // ppcoin: coin stake tx earns reward instead of paying fee
         uint64_t nCoinAge;
-        if (!vtx[1].GetCoinAge(txdb, nCoinAge))
+        if (!vtx[1].GetCoinAge(txdb, nCoinAge, pindex->nHeight))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", vtx[1].GetHash().ToString().substr(0,10).c_str());
 
         int64_t nCalculatedStakeReward = GetProofOfStakeReward(pindex->nHeight, nCoinAge, nFees);
@@ -1905,11 +1923,11 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
 // ppcoin: total coin age spent in transaction, in the unit of coin-days.
 // Only those coins meeting minimum age requirement counts. As those
 // transactions not in main chain are not currently indexed so we
-// might not find out about their coin age. Older transactions are 
+// might not find out about their coin age. Older transactions are
 // guaranteed to be in main chain by sync-checkpoint. This rule is
 // introduced to help nodes establish a consistent view of the coin
 // age (trust score) of competing branches.
-bool CTransaction::GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const
+bool CTransaction::GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge, int nHeight) const
 {
     CBigNum bnCentSecond = 0;  // coin age in the unit of cent-seconds
     nCoinAge = 0;
@@ -1931,7 +1949,7 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const
         CBlock block;
         if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
             return false; // unable to read block of previous transaction
-        if (block.GetBlockTime() + nStakeMinAge > nTime)
+        if (block.GetBlockTime() + StakeMinAge(nHeight) > nTime)
             continue; // only count coins meeting min age requirement
 
         int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
@@ -1949,7 +1967,7 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, uint64_t& nCoinAge) const
 }
 
 // ppcoin: total coin age spent in block, in the unit of coin-days.
-bool CBlock::GetCoinAge(uint64_t& nCoinAge) const
+bool CBlock::GetCoinAge(uint64_t& nCoinAge, int nHeight) const
 {
     nCoinAge = 0;
 
@@ -1957,7 +1975,7 @@ bool CBlock::GetCoinAge(uint64_t& nCoinAge) const
     BOOST_FOREACH(const CTransaction& tx, vtx)
     {
         uint64_t nTxCoinAge;
-        if (tx.GetCoinAge(txdb, nTxCoinAge))
+        if (tx.GetCoinAge(txdb, nTxCoinAge, nHeight))
             nCoinAge += nTxCoinAge;
         else
             return false;
@@ -2543,7 +2561,6 @@ bool LoadBlockIndex(bool fAllowNew)
         pchMessageStart[3] = 0xa3;
 
         bnProofOfWorkLimit = bnProofOfWorkLimitTestNet; // 0x0000ffff PoW base target is fixed in testnet
-        nStakeMinAge = 20 * 60; // test net min age is 20 min
         nCoinbaseMaturity = 10; // test maturity is 10 blocks
     }
 #if 0
@@ -3250,7 +3267,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 printf("  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString().substr(0,20).c_str());
                 // ppcoin: tell downloading node about the latest block if it's
                 // without risk being rejected due to stake connection check
-                if (hashStop != hashBestChain && pindex->GetBlockTime() + nStakeMinAge > pindexBest->GetBlockTime())
+                if (hashStop != hashBestChain && pindex->GetBlockTime() + StakeMinAge(pindex->nHeight) > pindexBest->GetBlockTime())
                     pfrom->PushInventory(CInv(MSG_BLOCK, hashBestChain));
                 break;
             }

@@ -32,7 +32,7 @@ namespace Checkpoints
         ( 110000 ,      uint256("0x000000015ef1613cf05d8605054011b7348ea04c02ed22653fe8cbd4f07595c1"))
         ( 120000 ,      uint256("0x5f7d84c466a7899404be606f7fd82f0e49bca16a08d91c8ad4a1f1988f6f3fcf"))
         ( 160000 ,      uint256("0x000000000540518ee8dd006c611a38c0621c94c568882f49c8cfcc78ace45529"))
-        ( 450000 ,      uint256("0x000000013373f1700e9e9fd8545a319462f4f30f8e0132b306ac1cde31181520"))        
+        ( 450000 ,      uint256("0x000000013373f1700e9e9fd8545a319462f4f30f8e0132b306ac1cde31181520"))
     ;
 
     // TestNet has no checkpoints
@@ -192,7 +192,7 @@ namespace Checkpoints
         return false;
     }
 
-    // Automatically select a suitable sync-checkpoint 
+    // Automatically select a suitable sync-checkpoint
     uint256 AutoSelectSyncCheckpoint()
     {
         const CBlockIndex *pindex = pindexBest;
@@ -237,7 +237,7 @@ namespace Checkpoints
             return false;
         if (hashBlock == hashPendingCheckpoint)
             return true;
-        if (mapOrphanBlocks.count(hashPendingCheckpoint) 
+        if (mapOrphanBlocks.count(hashPendingCheckpoint)
             && hashBlock == WantedByOrphan(mapOrphanBlocks[hashPendingCheckpoint]))
             return true;
         return false;
@@ -350,7 +350,7 @@ namespace Checkpoints
         assert(mapBlockIndex.count(hashSyncCheckpoint));
         const CBlockIndex* pindexSync = mapBlockIndex[hashSyncCheckpoint];
         return (nBestHeight >= pindexSync->nHeight + nCoinbaseMaturity ||
-                pindexSync->GetBlockTime() + nStakeMinAge < GetAdjustedTime());
+                pindexSync->GetBlockTime() + StakeMinAge(pindexSync->nHeight) < GetAdjustedTime());
     }
 }
 
