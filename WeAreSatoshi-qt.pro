@@ -29,6 +29,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 #MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
 #QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.3
 #QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.3/.libs
+BDB_LIB_SUFFIX=-4.8
 
 # for boost 1.37, add -mt to the boost libraries
 # use: qmake BOOST_LIB_SUFFIX=-mt
@@ -492,6 +493,7 @@ contains(RELEASE, 1) {
     !windows:!macx {
         # Linux: turn dynamic linking back on for c/c++ runtime libraries
         LIBS += -Wl,-Bdynamic
+        LIBS += -lrt -ldl
     }
 }
 
