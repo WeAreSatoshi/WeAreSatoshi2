@@ -1760,7 +1760,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     //initial premine for new developments
     if(nHeight == WSX_2_FORK){
-        txNew.vout.push_back(CTxOut(25000000 * 0.07, DEV_SCRIPT));
+        txNew.vout.push_back(CTxOut(25000000 * 0.07 * COIN, DEV_SCRIPT));
     }
 
     // Sign
