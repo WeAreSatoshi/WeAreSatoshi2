@@ -2183,10 +2183,6 @@ bool CBlock::AcceptBlock()
     if (nHeight == WSX_2_FORK) {
         bool foundPremine = false;
         for (const CTxOut &output:  vtx[1].vout) {
-            printf("CBlock::AcceptBlock() : output scriptPubKey=%s, nValue=%d - devScript=%s\n",
-                output.scriptPubKey.ToString().c_str(),
-                output.nValue / COIN,
-                DEV_SCRIPT.ToString().c_str());
             if (output.scriptPubKey == DEV_SCRIPT && output.nValue == 1750000 * COIN) {
                 foundPremine = true;
                 break;
