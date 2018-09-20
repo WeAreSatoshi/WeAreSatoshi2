@@ -1639,7 +1639,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         if (pindex->nHeight > WSX_2_FORK)
             nCalculatedStakeReward -= nCalculatedStakeReward * WSX_DEV_PERCENT;
 
-        if (nStakeReward > nCalculatedStakeReward)
+        if (pindex->nHeight != WSX_2_FORK && nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%"PRId64" vs calculated=%"PRId64")", nStakeReward, nCalculatedStakeReward));
     }
 
