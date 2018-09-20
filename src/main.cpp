@@ -1041,7 +1041,9 @@ int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees)
     if (nHeight >= WSX_2_FORK)
         nSubsidy = nCoinAge * nRewardCoinYear * 33 / (365 * 33 + 8);
     else
-        nSubsidy = nCoinAge * nRewardCoinYear / 365 / COIN;
+        nSubsidy = nCoinAge * nRewardCoinYear / 365;
+
+    nSubsidy /= COIN;
 
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRId64" nRewardCoinYear=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nCoinAge, nRewardCoinYear);
