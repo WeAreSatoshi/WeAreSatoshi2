@@ -2170,15 +2170,9 @@ bool CBlock::AcceptBlock()
     CScript DEV_SCRIPT;
     DEV_SCRIPT.SetDestination(CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ").Get());
 
-<<<<<<< HEAD
-    bool devFeeFound = false;
-
-    CTransaction temp = vtx[0];
-=======
     bool found_1 = false;
-	
+
     CTransaction temp = vtx[1];
->>>>>>> 10dc87fb... Fix transaction index for coinstake
 
     // Check premine allocation
     if (nHeight == WSX_2_FORK) {
@@ -2938,15 +2932,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if (nBestHeight >= nHardfork1Block && pfrom->nVersion < 20002)
         	badVersion = true;
         if (pfrom->nVersion < MIN_PROTO_VERSION)
-<<<<<<< HEAD
-            badVersion = true;
-        if (nBestHeight >= WSX_2_FORK && pfrom->nVersion < MIN_PROTO_VERSION_FORKV2)
-=======
         	badVersion = true;
 
 
         if (nBestHeight + 1 >= WSX_2_FORK && pfrom ->nVersion < PROTOCOL_VERSION_FORK)
->>>>>>> dacfb5ce... Disconnect from peers 1 block early
             badVersion = true;
 
         if (badVersion)
