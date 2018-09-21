@@ -1022,9 +1022,7 @@ int64_t GetProofOfStakeRewardPercent(int nHeight)
 {
     int64_t nRewardCoinYear = COIN_REWARD_STAGE_3;
 
-    if (nHeight >= WSX_2_FORK)
-        nRewardCoinYear = COIN_REWARD_STAGE_FORK;
-    else if (nHeight <= REWARD_LIMIT_STAGE_1)
+    if (nHeight <= REWARD_LIMIT_STAGE_1)
         nRewardCoinYear = COIN_REWARD_STAGE_1;
     else if (nHeight <= REWARD_LIMIT_STAGE_2)
         nRewardCoinYear = COIN_REWARD_STAGE_2;
@@ -1038,12 +1036,21 @@ int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees)
     int64_t nRewardCoinYear = GetProofOfStakeRewardPercent(nHeight);
     int64_t nSubsidy;
 
-    if (nHeight >= WSX_2_FORK)
-        nSubsidy = nCoinAge * nRewardCoinYear * 33 / (365 * 33 + 8);
-    else
-        nSubsidy = nCoinAge * nRewardCoinYear / 365;
+    if (nHeight >= WSX_2_FORK) {
+        nSubsidy = 10; // Starting fixed reward
 
-    nSubsidy /= COIN;
+        // Halving coin production by ~50% every 525,600 blocks, up to 1 WSX.
+        for (int i = WSX_2_FORK+525600; i <= pindexBest->nHeight; i += 525600) {
+            if (nSubsidy < 1)
+                break;
+            nSubsidy -= nSubsidy*0.5;
+        }
+
+        if (nSubsidy < 1)
+            nSubsidy = 1;
+    }
+    else
+        nSubsidy = nCoinAge * nRewardCoinYear / 365 / COIN;
 
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRId64" nRewardCoinYear=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nCoinAge, nRewardCoinYear);
