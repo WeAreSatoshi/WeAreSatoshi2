@@ -1037,7 +1037,7 @@ int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees)
     int64_t nSubsidy;
 
     if (nHeight >= WSX_2_FORK) {
-        nSubsidy = 10; // Starting fixed reward
+        nSubsidy = 10 * COIN; // Starting fixed reward
 
         // Halving coin production by ~50% every 525,600 blocks, up to 1 WSX.
         for (int i = WSX_2_FORK+525600; i <= pindexBest->nHeight; i += 525600) {
