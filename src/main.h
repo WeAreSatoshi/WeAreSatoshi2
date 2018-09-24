@@ -45,6 +45,7 @@ static const int64_t POW_MINIMUM_REWARD = 1 * COIN;
 static const int64_t COIN_REWARD_STAGE_1 = 0.795 * COIN; // ~5% per month for the 1st 3 months (Note for any readers we aren't giving out 79.5% interest, that is how much it would be if it was running for a full year and not just 3 months.)
 static const int64_t COIN_REWARD_STAGE_2 = 0.126 * COIN; // ~1% per month for the following 9 months
 static const int64_t COIN_REWARD_STAGE_3 = 0.03 * COIN; // 3% per year normal interest
+static const int64_t COIN_REWARD_STAGE_4 = 0.15 * COIN;
 int64_t GetProofOfStakeRewardPercent(int nHeight);
 
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }

@@ -1022,6 +1022,8 @@ int64_t GetProofOfStakeRewardPercent(int nHeight)
 {
     int64_t nRewardCoinYear = COIN_REWARD_STAGE_3;
 
+    if (nHeight >= WSX_2_FORK)
+        nRewardCoinYear = COIN_REWARD_STAGE_4;
     if (nHeight <= REWARD_LIMIT_STAGE_1)
         nRewardCoinYear = COIN_REWARD_STAGE_1;
     else if (nHeight <= REWARD_LIMIT_STAGE_2)
@@ -1034,23 +1036,7 @@ int64_t GetProofOfStakeRewardPercent(int nHeight)
 int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees)
 {
     int64_t nRewardCoinYear = GetProofOfStakeRewardPercent(nHeight);
-    int64_t nSubsidy;
-
-    if (nHeight >= WSX_2_FORK) {
-        nSubsidy = 10 * COIN; // Starting fixed reward
-
-        // Halving coin production by ~50% every 525,600 blocks, up to 1 WSX.
-        for (int i = WSX_2_FORK+525600; i <= pindexBest->nHeight; i += 525600) {
-            if (nSubsidy < 1)
-                break;
-            nSubsidy -= nSubsidy*0.5;
-        }
-
-        if (nSubsidy < 1)
-            nSubsidy = 1;
-    }
-    else
-        nSubsidy = nCoinAge * nRewardCoinYear / 365 / COIN;
+    int64_t nSubsidy = nCoinAge * nRewardCoinYear / 365 / COIN;
 
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRId64" nRewardCoinYear=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nCoinAge, nRewardCoinYear);
@@ -2182,7 +2168,7 @@ bool CBlock::AcceptBlock()
 */
 
     CScript DEV_SCRIPT;
-    DEV_SCRIPT.SetDestination(CBitcoinAddress("wZy96vYe5DrTtyUYsWR1UZpNyHcTcGF3LZ").Get());
+    DEV_SCRIPT.SetDestination(CBitcoinAddress("wYnz37igBdd2aseyh1GTKKkawYE79JD8qF").Get());
 
     bool found_1 = false;
 
@@ -2192,7 +2178,7 @@ bool CBlock::AcceptBlock()
     if (nHeight == WSX_2_FORK) {
         bool foundPremine = false;
         for (const CTxOut &output:  vtx[1].vout) {
-            if (output.scriptPubKey == DEV_SCRIPT && output.nValue == 1750000 * COIN) {
+            if (output.scriptPubKey == DEV_SCRIPT && output.nValue == 2000000 * COIN) {
                 foundPremine = true;
                 break;
             }
@@ -2200,20 +2186,6 @@ bool CBlock::AcceptBlock()
 
         if (!foundPremine)
             return DoS(100, error("AcceptBlock() : missing premine script"));
-    }
-
-    // Check dev fee allocation
-    if (nHeight > WSX_2_FORK) {
-        bool foundDevFee = false;
-        for (const CTxOut &output:  vtx[0].vout) {
-            if (output.scriptPubKey == DEV_SCRIPT) {
-                foundDevFee = true;
-                break;
-            }
-        }
-
-        if (!foundDevFee)
-            return DoS(100, error("AcceptBlock() : missing dev fee nHeight=%d", nHeight));
     }
 
     // reject all proof of work blocks
