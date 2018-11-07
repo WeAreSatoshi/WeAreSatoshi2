@@ -45,15 +45,15 @@ tradingDialog::tradingDialog(QWidget *parent) :
 
 
     /*OrderBook Table Init*/
-    CreateOrderBookTables(*ui->BidsTable,QStringList() << "TOTAL(BTC)"<< ""TRADING_THIS_COIN"(SIZE)" << "BID(BTC)");
-    CreateOrderBookTables(*ui->AsksTable,QStringList() << "ASK(BTC)"  << ""TRADING_THIS_COIN"(SIZE)" << "TOTAL(BTC)");
+    CreateOrderBookTables(*ui->BidsTable,QStringList() << "TOTAL(BTC)"<< "" TRADING_THIS_COIN "(SIZE)" << "BID(BTC)");
+    CreateOrderBookTables(*ui->AsksTable,QStringList() << "ASK(BTC)"  << "" TRADING_THIS_COIN "(SIZE)" << "TOTAL(BTC)");
     /*OrderBook Table Init*/
 
     /*Market History Table Init*/
     ui->MarketHistoryTable->setColumnCount(5);
     ui->MarketHistoryTable->verticalHeader()->setVisible(false);
 
-    ui->MarketHistoryTable->setHorizontalHeaderLabels(QStringList()<<"DATE"<<"BUY/SELL"<<"BID/ASK"<<"TOTAL UNITS("TRADING_THIS_COIN")"<<"TOTAL COST(BTC");
+    ui->MarketHistoryTable->setHorizontalHeaderLabels(QStringList()<<"DATE"<<"BUY/SELL"<<"BID/ASK"<<"TOTAL UNITS(" TRADING_THIS_COIN ")"<<"TOTAL COST(BTC");
     ui->MarketHistoryTable->setRowCount(0);
 
     int Cellwidth =  ui->MarketHistoryTable->width() / 5;
@@ -149,18 +149,18 @@ void tradingDialog::UpdaterFunction(){
 
 QString tradingDialog::GetMarketSummary(){
 
-     QString Response = sendRequest("https://bittrex.com/api/v1.1/public/GetMarketSummary?market=btc-"TRADING_THIS_COIN"");
+     QString Response = sendRequest("https://bittrex.com/api/v1.1/public/GetMarketSummary?market=btc-" TRADING_THIS_COIN "");
      return Response;
 }
 
 QString tradingDialog::GetOrderBook(){
 
-      QString  Response = sendRequest("https://bittrex.com/api/v1.1/public/getorderbook?market=BTC-"TRADING_THIS_COIN"&type=both&depth=50");
+      QString  Response = sendRequest("https://bittrex.com/api/v1.1/public/getorderbook?market=BTC-" TRADING_THIS_COIN "&type=both&depth=50");
       return Response;
 }
 
 QString tradingDialog::GetMarketHistory(){
-      QString Response = sendRequest("https://bittrex.com/api/v1.1/public/getmarkethistory?market=BTC-"TRADING_THIS_COIN"&count=100");
+      QString Response = sendRequest("https://bittrex.com/api/v1.1/public/getmarkethistory?market=BTC-" TRADING_THIS_COIN "&count=100");
       return Response;
 }
 
@@ -182,7 +182,7 @@ QString tradingDialog::BuyICB(QString OrderType, double Quantity, double Rate){
             URL += OrderType;
             URL += "?apikey=";
             URL += this->ApiKey;
-            URL += "&nonce=12345434&market=BTC-"TRADING_THIS_COIN"&quantity=";
+            URL += "&nonce=12345434&market=BTC-" TRADING_THIS_COIN "&quantity=";
             URL += str.number(Quantity,'i',8);
             URL += "&rate=";
             URL += str.number(Rate,'i',8);
@@ -198,7 +198,7 @@ QString tradingDialog::SellICB(QString OrderType, double Quantity, double Rate){
             URL += OrderType;
             URL += "?apikey=";
             URL += this->ApiKey;
-            URL += "&nonce=12345434&market=BTC-"TRADING_THIS_COIN"&quantity=";
+            URL += "&nonce=12345434&market=BTC-" TRADING_THIS_COIN "&quantity=";
             URL += str.number(Quantity,'i',8);
             URL += "&rate=";
             URL += str.number(Rate,'i',8);
@@ -210,7 +210,7 @@ QString tradingDialog::SellICB(QString OrderType, double Quantity, double Rate){
 QString tradingDialog::GetOpenOrders(){
     QString URL = "https://bittrex.com/api/v1.1/market/getopenorders?apikey=";
             URL += this->ApiKey;
-            URL += "&nonce=12345434&market=BTC-"TRADING_THIS_COIN"";
+            URL += "&nonce=12345434&market=BTC-" TRADING_THIS_COIN "";
 
     QString Response = sendRequest(URL);
     return Response;
@@ -231,7 +231,7 @@ QString tradingDialog::GetDepositAddress(){
 
     QString URL = "https://bittrex.com/api/v1.1/account/getdepositaddress?apikey=";
             URL += this->ApiKey;
-            URL += "&nonce=12345434&currency="TRADING_THIS_COIN"";
+            URL += "&nonce=12345434&currency=" TRADING_THIS_COIN "";
 
     QString Response = sendRequest(URL);
     return Response;
@@ -241,7 +241,7 @@ QString tradingDialog::GetAccountHistory(){
 
     QString URL = "https://bittrex.com/api/v1.1/account/getorderhistory?apikey=";
             URL += this->ApiKey;
-            URL += "&nonce=12345434&market=BTC-"TRADING_THIS_COIN"&count=10";
+            URL += "&nonce=12345434&market=BTC-" TRADING_THIS_COIN "&count=10";
 
     QString Response = sendRequest(URL);
     return Response;
@@ -265,7 +265,7 @@ int tradingDialog::SetExchangeInfoTextLabels(){
 
     ui->Bid->setText("<b>Bid:</b> <span style='font-weight:bold; font-size:11px; color:Green;'>" + str.number(obj["Bid"].toDouble(),'i',8) + "</span> BTC");
 
-    ui->volumet->setText("<b>"TRADING_THIS_COIN" Volume:</b> <span style='font-weight:bold; font-size:11px; color:blue;'>" + str.number(obj["Volume"].toDouble(),'i',8) + "</span> "TRADING_THIS_COIN"");
+    ui->volumet->setText("<b>" TRADING_THIS_COIN " Volume:</b> <span style='font-weight:bold; font-size:11px; color:blue;'>" + str.number(obj["Volume"].toDouble(),'i',8) + "</span> " TRADING_THIS_COIN "");
 
     ui->volumebtc->setText("<b>BTC Volume:</b> <span style='font-weight:bold; font-size:11px; color:blue;'>" + str.number(obj["BaseVolume"].toDouble(),'i',8) + "</span> BTC");
 
@@ -492,12 +492,12 @@ void tradingDialog::ParseAndPopulateOrderBookTables(QString OrderBook){
         BuyItteration++;
      }
 
-        ui->ICBSupply->setText("<b>Supply:</b> <span style='font-weight:bold; font-size:11px; color:blue'>" + str.number(ICBSupply,'i',8) + "</span><b> "TRADING_THIS_COIN"</b>");
+        ui->ICBSupply->setText("<b>Supply:</b> <span style='font-weight:bold; font-size:11px; color:blue'>" + str.number(ICBSupply,'i',8) + "</span><b> " TRADING_THIS_COIN "</b>");
         ui->BtcSupply->setText("<span style='font-weight:bold; font-size:11px; color:blue'>" + str.number(BtcSupply,'i',8) + "</span><b> BTC</b>");
         ui->AsksCount->setText("<b>Ask's :</b> <span style='font-weight:bold; font-size:11px; color:blue'>" + str.number(ui->AsksTable->rowCount()) + "</span>");
 
 
-        ui->ICBDemand->setText("<b>Demand:</b> <span style='font-weight:bold; font-size:11px; color:blue'>" + str.number(ICBDemand,'i',8) + "</span><b> "TRADING_THIS_COIN"</b>");
+        ui->ICBDemand->setText("<b>Demand:</b> <span style='font-weight:bold; font-size:11px; color:blue'>" + str.number(ICBDemand,'i',8) + "</span><b> " TRADING_THIS_COIN "</b>");
         ui->BtcDemand->setText("<span style='font-weight:bold; font-size:11px; color:blue'>" + str.number(BtcDemand,'i',8) + "</span><b> BTC</b>");
         ui->BidsCount->setText("<b>Bid's :</b> <span style='font-weight:bold; font-size:11px; color:blue'>" + str.number(ui->BidsTable->rowCount()) + "</span>");
   obj.empty();
@@ -888,7 +888,7 @@ void tradingDialog::on_BuyICB_clicked()
 
     QString Msg = "Are you sure you want to buy ";
             Msg += ui->UnitsInput->text();
-            Msg += ""TRADING_THIS_COIN" @ ";
+            Msg += "" TRADING_THIS_COIN " @ ";
             Msg += ui->BuyBidPriceEdit->text();
             Msg += " BTC Each";
 
@@ -930,7 +930,7 @@ void tradingDialog::on_SellICBBTN_clicked()
 
     QString Msg = "Are you sure you want to Sell ";
             Msg += ui->UnitsInputICB->text();
-            Msg += " "TRADING_THIS_COIN" @ ";
+            Msg += " " TRADING_THIS_COIN " @ ";
             Msg += ui->SellBidPriceEdit->text();
             Msg += " BTC Each";
 
