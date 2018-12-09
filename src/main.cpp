@@ -40,9 +40,9 @@ CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // "standard" scrypt target limit
 CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
-unsigned int nTargetSpacing = 1 * 90; // 90 seconds
-unsigned int nStakeMinAge = 12 * 60 * 60; // 12 hour
-unsigned int nStakeMaxAge = 60 * 60 * 24 * 365 ;  // one year
+unsigned int nTargetSpacing = 30; // 30 seconds
+unsigned int nStakeMinAge = 60 * 60 * 24 * 5; // 5 days
+unsigned int nStakeMaxAge = 60 * 60 * 24 * 30;  // 30 days
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 50;
@@ -68,7 +68,7 @@ map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
 // Constant stuff for coinbase transactions we create:
 CScript COINBASE_FLAGS;
 
-const string strMessageMagic = "cryptcoin Signed Message:\n";
+const string strMessageMagic = "WeAreSatoshi Signed Message:\n";
 
 // Settings
 int64_t nTransactionFee = MIN_TX_FEE;
@@ -964,46 +964,50 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan)
 }
 
 // miner's coin base reward
-int64_t GetProofOfWorkReward(int64_t nFees)
+
+int64_t GetProofOfWorkReward(int nHeight, int64_t nFees)
 {
-    int64_t nSubsidy = 31.25 * COIN;
-    if(pindexBest->nHeight < 2000)
-    {
-        nSubsidy = 500 * COIN;
-    }
-        else if(pindexBest->nHeight < 4000)
-    {
-        nSubsidy = 250 * COIN;
-    }
-        else if(pindexBest->nHeight < 12000)
-    {
-        nSubsidy = 125 * COIN;
-    }
-        else if(pindexBest->nHeight < 48000)
-    {
-        nSubsidy = 62.5 * COIN;
-    }
-        else if(pindexBest->nHeight < 222000)
-    {
-        nSubsidy = 31.25 * COIN;
-    }
+    if (nHeight == 1)
+        return 500 * COIN; // Coins for the coin swap
+    if (nHeight == 2)
+        return 800000 * COIN; // 2% pre-mine for development
 	
+    int64_t nSubsidy = POW_INITIAL_REWARD;
+    int halving = nHeight / POW_HALVING_INTERVAL;
+    nSubsidy >>= halving;
+    
+    // Maintenance phase: Subsidy reaches minimum reward
+    if (halving > 10 || nSubsidy < POW_MINIMUM_REWARD)
+			nSubsidy = POW_MINIMUM_REWARD;
+
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfWorkReward() : create=%s nSubsidy=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nSubsidy);
 	
+    // Network is rewarded for transaction processing with transaction fees and the subsidy
     return nSubsidy + nFees;
 }
 
-const int DAILY_BLOCKCOUNT =  960;
-// miner's coin stake reward based on coin age spent (coin-days)
-int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
+static const int DAILY_BLOCKCOUNT = 2880;
+static const int REWARD_LIMIT_STAGE_1 = 2880 * 90;
+static const int REWARD_LIMIT_STAGE_2 = 2880 * 365;
+int64_t GetProofOfStakeRewardPercent(int nHeight)
 {
-    int64_t nRewardCoinYear;
+    int64_t nRewardCoinYear = COIN_REWARD_STAGE_3;
+    
+    if (nHeight <= REWARD_LIMIT_STAGE_1)
+        nRewardCoinYear = COIN_REWARD_STAGE_1;
+    else if (nHeight <= REWARD_LIMIT_STAGE_2)
+        nRewardCoinYear = COIN_REWARD_STAGE_2;
+    	
+    return nRewardCoinYear;
+}
 
-    nRewardCoinYear = MAX_MINT_PROOF_OF_STAKE;
+// miner's coin stake reward based on coin age spent (coin-days)
+int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees)
+{
+    int64_t nRewardCoinYear = GetProofOfStakeRewardPercent(nHeight);
 
     int64_t nSubsidy = nCoinAge * nRewardCoinYear / 365 / COIN;
-
 
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nCoinAge);
@@ -1582,7 +1586,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
     if (IsProofOfWork())
     {
-        int64_t nReward = GetProofOfWorkReward(nFees);
+        int64_t nReward = GetProofOfWorkReward(pindex->nHeight, nFees);
         // Check coinbase reward
         if (vtx[0].GetValueOut() > nReward)
             return DoS(50, error("ConnectBlock() : coinbase reward exceeded (actual=%"PRId64" vs calculated=%"PRId64")",
@@ -1596,7 +1600,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         if (!vtx[1].GetCoinAge(txdb, nCoinAge))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", vtx[1].GetHash().ToString().substr(0,10).c_str());
 
-        int64_t nCalculatedStakeReward = GetProofOfStakeReward(nCoinAge, nFees);
+        int64_t nCalculatedStakeReward = GetProofOfStakeReward(pindex->nHeight, nCoinAge, nFees);
 
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%"PRId64" vs calculated=%"PRId64")", nStakeReward, nCalculatedStakeReward));
@@ -2117,11 +2121,13 @@ bool CBlock::AcceptBlock()
     CBlockIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
 
+/*
     if (IsProofOfWork() && nHeight > LAST_POW_BLOCK)
         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     if (IsProofOfStake() && nHeight < MODIFIER_INTERVAL_SWITCH)
         return DoS(100, error("AcceptBlock() : reject proof-of-stake at height %d", nHeight));
+*/
 
     // Check proof-of-work or proof-of-stake
     if (nBits != GetNextTargetRequired(pindexPrev, IsProofOfStake()))
@@ -2411,7 +2417,7 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes)
         string strMessage = _("Warning: Disk space is low!");
         strMiscWarning = strMessage;
         printf("*** %s\n", strMessage.c_str());
-        uiInterface.ThreadSafeMessageBox(strMessage, "cryptcoin", CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
+        uiInterface.ThreadSafeMessageBox(strMessage, "WeAreSatoshi", CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
         StartShutdown();
         return false;
     }
@@ -2811,7 +2817,7 @@ bool static AlreadyHave(CTxDB& txdb, const CInv& inv)
 // The message start string is designed to be unlikely to occur in normal data.
 // The characters are rarely used upper ASCII, not valid as UTF-8, and produce
 // a large 4-byte int at any alignment.
-unsigned char pchMessageStart[4] = { 0xf1, 0xaf, 0xf2, 0xa3 };
+unsigned char pchMessageStart[4] = { 0xFA, 0x4D, 0x44, 0xFC };
 
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 {

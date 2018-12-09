@@ -20,8 +20,9 @@ Value getsubsidy(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "getsubsidy [nTarget]\n"
-            "Returns proof-of-work subsidy value for the specified value of target.");
+            "Returns proof-of-work subsidy value for the specified block height.");
 
+/*
     unsigned int nBits = 0;
 
     if (params.size() != 0)
@@ -33,8 +34,18 @@ Value getsubsidy(const Array& params, bool fHelp)
     {
         nBits = GetNextTargetRequired(pindexBest, false);
     }
+*/
+    int nHeight = nBestHeight+1;
+    if (params.size() != 0)
+    {
+        nHeight = params[0].get_int();
+        if (nHeight < 0)
+            nHeight = 0;
+        if (nHeight > 2147483647)
+            nHeight = 2147483647;
+    }
 
-    return (uint64_t)GetProofOfWorkReward(0);
+    return ValueFromAmount(GetProofOfWorkReward(nHeight, 0));
 }
 
 Value getmininginfo(const Array& params, bool fHelp)
@@ -57,7 +68,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     diff.push_back(Pair("search-interval",      (int)nLastCoinStakeSearchInterval));
     obj.push_back(Pair("difficulty",    diff));
 
-    obj.push_back(Pair("blockvalue",    (uint64_t)GetProofOfWorkReward(0)));
+    obj.push_back(Pair("blockvalue",    ValueFromAmount(GetProofOfWorkReward(nBestHeight+1, 0))));
     obj.push_back(Pair("netmhashps",     GetPoWMHashPS()));
     obj.push_back(Pair("netstakeweight", GetPoSKernelPS()));
     obj.push_back(Pair("errors",        GetWarnings("statusbar")));
@@ -68,7 +79,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     weight.push_back(Pair("combined",  (uint64_t)nWeight));
     obj.push_back(Pair("stakeweight", weight));
 
-    obj.push_back(Pair("stakeinterest",    (uint64_t)COIN_YEAR_REWARD));
+    obj.push_back(Pair("stakeinterest",    ValueFromAmount(GetProofOfStakeRewardPercent(nBestHeight+1))));
     obj.push_back(Pair("testnet",       fTestNet));
     return obj;
 }
@@ -117,13 +128,13 @@ Value getworkex(const Array& params, bool fHelp)
         );
 
     if (vNodes.empty())
-        throw JSONRPCError(-9, "cryptcoin is not connected!");
+        throw JSONRPCError(-9, "WeAreSatoshi is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(-10, "cryptcoin is downloading blocks...");
+        throw JSONRPCError(-10, "WeAreSatoshi is downloading blocks...");
 
-    if (pindexBest->nHeight >= LAST_POW_BLOCK)
-        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
+//    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+//        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;
@@ -251,13 +262,13 @@ Value getwork(const Array& params, bool fHelp)
             "If [data] is specified, tries to solve the block and returns true if it was successful.");
 
     if (vNodes.empty())
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "cryptcoin is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "WeAreSatoshi is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "cryptcoin is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "WeAreSatoshi is downloading blocks...");
 
-    if (pindexBest->nHeight >= LAST_POW_BLOCK)
-        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
+//    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+//        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;    // FIXME: thread safety
@@ -395,13 +406,13 @@ Value getblocktemplate(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
 
     if (vNodes.empty())
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "cryptcoin is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "WeAreSatoshi is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "cryptcoin is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "WeAreSatoshi is downloading blocks...");
 
-    if (pindexBest->nHeight >= LAST_POW_BLOCK)
-        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
+//    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+//        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     static CReserveKey reservekey(pwalletMain);
 

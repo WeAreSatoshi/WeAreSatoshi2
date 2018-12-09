@@ -27,19 +27,22 @@ class CInv;
 class CRequestTracker;
 class CNode;
 
-static const int LAST_POW_BLOCK = 368000;
-
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
 static const unsigned int MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
 static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100;
 static const unsigned int MAX_INV_SZ = 50000;
-static const int64_t MIN_TX_FEE = 1000;
+static const int64_t MIN_TX_FEE = 10000;
 static const int64_t MIN_RELAY_TX_FEE = MIN_TX_FEE;
-static const int64_t MAX_MONEY = 20000000 * COIN;
-static const int64_t COIN_YEAR_REWARD = 1 * CENT; // 1% per year
-static const int64_t MAX_MINT_PROOF_OF_STAKE = 0.0275 * COIN;	// 2.75% annual interest
-static const int MODIFIER_INTERVAL_SWITCH = 500;
+
+static const int64_t MAX_MONEY = 40000000 * COIN;
+static const int64_t POW_INITIAL_REWARD = 25 * COIN;
+static const int64_t POW_HALVING_INTERVAL = 200000;
+static const int64_t POW_MINIMUM_REWARD = 1 * COIN;
+static const int64_t COIN_REWARD_STAGE_1 = 79.5 * CENT; // ~5% per month for the 1st 3 months (Note for any readers we aren't giving out 79.5% interest, that is how much it would be if it was running for a full year and not just 3 months.)
+static const int64_t COIN_REWARD_STAGE_2 = 12.6 * CENT; // ~1% per month for the following 9 months
+static const int64_t COIN_REWARD_STAGE_3 = 3 * CENT; // 3% per year normal interest
+int64_t GetProofOfStakeRewardPercent(int nHeight);
 
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 // Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp.
@@ -114,8 +117,8 @@ bool LoadExternalBlockFile(FILE* fileIn);
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
 unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfStake);
-int64_t GetProofOfWorkReward(int64_t nFees);
-int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees);
+int64_t GetProofOfWorkReward(int nHeight, int64_t nFees);
+int64_t GetProofOfStakeReward(int nHeight, int64_t nCoinAge, int64_t nFees);
 unsigned int ComputeMinWork(unsigned int nBase, int64_t nTime);
 unsigned int ComputeMinStake(unsigned int nBase, int64_t nTime, unsigned int nBlockTime);
 int GetNumBlocksOfPeers();

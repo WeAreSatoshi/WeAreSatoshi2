@@ -360,7 +360,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             printf("CreateNewBlock(): total size %"PRIu64"\n", nBlockSize);
 
         if (!fProofOfStake)
-            pblock->vtx[0].vout[0].nValue = GetProofOfWorkReward(nFees);
+            pblock->vtx[0].vout[0].nValue = GetProofOfWorkReward((pindexPrev != NULL) ? pindexPrev->nHeight+1:1, nFees);
 
         if (pFees)
             *pFees = nFees;
@@ -526,7 +526,7 @@ void StakeMiner(CWallet *pwallet)
     SetThreadPriority(THREAD_PRIORITY_LOdrm);
 
     // Make this thread recognisable as the mining thread
-    RenameThread("cryptcoin-miner");
+    RenameThread("WeAreSatoshi-miner");
 
     bool fTryToSync = true;
 

@@ -90,7 +90,7 @@
      <item>
       <widget class="QValidatedLineEdit" name="payTo">
        <property name="toolTip">
-        <string>The address to send the payment to  (e.g. cryptcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</string>
+        <string>The address to send the payment to  (e.g. wLoaCUNHYqogrFp6KPYcuotvXJQDZi9QJd)</string>
        </property>
        <property name="maxLength">
         <number>34</number>

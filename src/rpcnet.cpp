@@ -68,7 +68,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
     return ret;
 }
  
-// ppcoin: send alert.  
+// send alert.  
 // There is a known deadlock situation with ThreadMessageHandler
 // ThreadMessageHandler: holds cs_vSend and acquiring cs_main in SendMessages()
 // ThreadRPCServer: holds cs_main and acquiring cs_vSend in alert.RelayTo()/PushMessage()/BeginMessage()
@@ -76,18 +76,21 @@ Value sendalert(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 6)
         throw runtime_error(
-            "sendalert <message> <privatekey> <minver> <maxver> <priority> <id> [cancelupto]\n"
+            "sendalert <message> <privatekey> <minver> <maxver> <priority> <id> [expires] [cancelupto]\n"
             "<message> is the alert text message\n"
             "<privatekey> is hex string of alert master private key\n"
             "<minver> is the minimum applicable internal client version\n"
             "<maxver> is the maximum applicable internal client version\n"
             "<priority> is integer priority number\n"
             "<id> is the alert id\n"
+            "[expires] is how long to keep the alert active (in seconds)\n"
             "[cancelupto] cancels all alert id's up to this number\n"
             "Returns true or false.");
 
     CAlert alert;
     CKey key;
+    
+    int64_t nExpires = GetAdjustedTime() + 365*24*60*60;
 
     alert.strStatusBar = params[0].get_str();
     alert.nMinVer = params[2].get_int();
@@ -95,10 +98,12 @@ Value sendalert(const Array& params, bool fHelp)
     alert.nPriority = params[4].get_int();
     alert.nID = params[5].get_int();
     if (params.size() > 6)
-        alert.nCancel = params[6].get_int();
+        nExpires = GetAdjustedTime() + params[6].get_int();
+    if (params.size() > 7)
+        alert.nCancel = params[7].get_int();
     alert.nVersion = PROTOCOL_VERSION;
-    alert.nRelayUntil = GetAdjustedTime() + 365*24*60*60;
-    alert.nExpiration = GetAdjustedTime() + 365*24*60*60;
+    alert.nRelayUntil = nExpires;
+    alert.nExpiration = nExpires;
 
     CDataStream sMsg(SER_NETWORK, PROTOCOL_VERSION);
     sMsg << (CUnsignedAlert)alert;
