@@ -28,6 +28,7 @@ std::string LogFileName(const std::string& name, uint64_t number) {
   assert(number > 0);
   return MakeFileName(name, number, "log");
 }
+
 // TableFileName returns the filenames we usually write to, while
 // SSTTableFileName returns the alternative filenames we also try to read from
 // for backward compatibility. For now, swap them around.

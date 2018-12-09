@@ -2,34 +2,61 @@
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-USE_UPNP:=0
-USE_LEVELDB:=0
+# Makefile for the MinGW g++ compiler/toolchain
+#
+# Assumes Berkeley DB, Boost, and OpenSSL have all been compiled and installed
+# into /usr/local (/usr/local/include, /usr/local/lib).
+#
+# If dependencies are somewhere else, run 'make DEPSDIR=/path/'
+#
+# Boost libraries are given wacky names that include the particular version of
+# boost you're using; set BOOST_SUFFIX appropriately.
+#
+# 'make clean' assumes it is running inside a MSYS shell, and uses 'rm'
+# to remove files.
+
+CXX ?= g++
+
+USE_UPNP:=-
 USE_IPV6:=1
 
+DEPSDIR?=/usr/local
+BOOST_SUFFIX?=-mgw48-mt-s-1_55
+
 INCLUDEPATHS= \
- -I"C:\boost-1.50.0-mgw" \
- -I"C:\db-4.8.30.NC-mgw\build_unix" \
- -I"C:\openssl-1.0.1c-mgw\include"
+ -I"$(CURDIR)" \
+ -I"$(DEPSDIR)/include" \
+ -I"c:/deps/boost_1_55_0" \
+ -I"c:/deps/db-4.8.30.NC/build_unix" \
+ -I"c:/deps/miniupnpc-1.8" \
+ -I"c:/deps/openssl-1.0.1g/include"
 
 LIBPATHS= \
- -L"C:\boost-1.50.0-mgw\stage\lib" \
- -L"C:\db-4.8.30.NC-mgw\build_unix" \
- -L"C:\openssl-1.0.1c-mgw"
+ -L"$(CURDIR)/leveldb" \
+ -L"$(DEPSDIR)/lib" \
+ -L"c:/deps/boost_1_55_0/stage/lib" \
+ -L"c:/deps/db-4.8.30.NC/build_unix" \
+ -L"c:/deps/miniupnpc-1.8" \
+ -L"c:/deps/openssl-1.0.1g"
 
 LIBS= \
- -l boost_system-mgw44-mt-1_53 \
- -l boost_filesystem-mgw44-mt-1_53 \
- -l boost_program_options-mgw44-mt-1_53 \
- -l boost_thread-mgw44-mt-1_53 \
- -l boost_chrono-mgw44-mt-1_53 \
+ -l leveldb \
+ -l memenv \
+ -l boost_system$(BOOST_SUFFIX) \
+ -l boost_filesystem$(BOOST_SUFFIX) \
+ -l boost_program_options$(BOOST_SUFFIX) \
+ -l boost_thread$(BOOST_SUFFIX) \
+ -l boost_chrono$(BOOST_SUFFIX) \
  -l db_cxx \
  -l ssl \
  -l crypto
 
-DEFS=-DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE -D__STDC_FORMAT_MACROS
+DEFS=-DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE
 DEBUGFLAGS=-g
-CFLAGS=-mthreads -O2 -msse2 -w -Wall -Wextra -Wno-ignored-qualifiers -Wformat -Wformat-security -Wno-unused-parameter $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
+CFLAGS=-mthreads -O3 -msse2 -w -Wall -Wextra -Wno-ignored-qualifiers -Wformat -Wformat-security -Wno-unused-parameter $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
 LDFLAGS=-Wl,--dynamicbase -Wl,--nxcompat
+
+TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
 
 ifndef USE_UPNP
 	override USE_UPNP = -
@@ -38,7 +65,7 @@ ifneq (${USE_UPNP}, -)
  INCLUDEPATHS += -I"C:\miniupnpc-1.6-mgw"
  LIBPATHS += -L"C:\miniupnpc-1.6-mgw"
  LIBS += -l miniupnpc -l iphlpapi
- DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP) -DMINIUPNP_STATICLIB
+ DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
 endif
 
 ifneq (${USE_IPV6}, -)
@@ -51,6 +78,17 @@ LIBS += -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l winmm -l shell
 HEADERS = $(wildcard *.h)
 
 OBJS= \
+    obj/groestl.o \
+    obj/blake.o \
+    obj/bmw.o \
+    obj/skein.o \
+    obj/keccak.o \
+    obj/shavite.o \
+    obj/jh.o \
+    obj/luffa.o \
+    obj/cubehash.o \
+    obj/echo.o \
+    obj/simd.o \
     obj/alert.o \
     obj/version.o \
     obj/checkpoints.o \
@@ -65,7 +103,6 @@ OBJS= \
     obj/main.o \
     obj/miner.o \
     obj/net.o \
-    obj/stun.o \
     obj/protocol.o \
     obj/bitcoinrpc.o \
     obj/rpcdump.o \
@@ -82,48 +119,53 @@ OBJS= \
     obj/noui.o \
     obj/kernel.o \
     obj/pbkdf2.o \
-    obj/scrypt.o
+    obj/scrypt.o \
+    obj/scrypt-arm.o \
+    obj/scrypt-x86.o \
+    obj/scrypt-x86_64.o 
 
-all: novacoind.exe
+all: cryptcoind.exe
 
-#
-# LevelDB support
-#
-ifdef USE_LEVELDB
 LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
-DEFS += $(addprefix -I,$(CURDIR)/leveldb/include) -DUSE_LEVELDB
+DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
 OBJS += obj/txdb-leveldb.o
 leveldb/libleveldb.a:
 	cd leveldb; make; cd ..
-obj/txdb-leveldb.o: leveldb/libleveldb.lib
-else
-OBJS += obj/txdb-bdb.o
-endif
+obj/txdb-leveldb.o: leveldb/libleveldb.a
 
-ifdef USE_ASM
-OBJS += obj/scrypt-x86.o obj/scrypt-x86_64.o
+obj/%.o: %.cpp $(HEADERS)
+	g++ -c $(CFLAGS) -o $@ $<
+
 
 obj/scrypt-x86.o: scrypt-x86.S
 	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
 obj/scrypt-x86_64.o: scrypt-x86_64.S
 	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
-else
-OBJS += obj/scrypt-generic.o
 
-obj/scrypt-generic.o: scrypt-generic.c
-	$(CC) -c $(xCXXFLAGS) -MMD -o $@ $<
-endif
+obj/scrypt-arm.o: scrypt-arm.S
+	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+	
+obj/%.o: %.c
+	$(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+              -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	      
+	rm -f $(@:%.o=%.d)
+obj/%.o: %.cpp
+	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	  rm -f $(@:%.o=%.d)
 
-obj/%.o: %.cpp $(HEADERS)
-	g++ -c $(CFLAGS) -o $@ $<
-
-novacoind.exe: $(OBJS:obj/%=obj/%)
+cryptcoind.exe: $(OBJS:obj/%=obj/%)
 	g++ $(CFLAGS) $(LDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 clean:
-	-del /Q novacoind
+	-del /Q cryptcoind
 	-del /Q obj\*
 
 FORCE:

@@ -6,12 +6,12 @@
 #include <openssl/evp.h>
 #include <vector>
 #include <string>
-
-#include "crypter.h"
-
 #ifdef WIN32
 #include <windows.h>
 #endif
+
+#include "crypter.h"
+#include "scrypt.h"
 
 bool CCrypter::SetKeyFromPassphrase(const SecureString& strKeyData, const std::vector<unsigned char>& chSalt, const unsigned int nRounds, const unsigned int nDerivationMethod)
 {
@@ -24,6 +24,17 @@ bool CCrypter::SetKeyFromPassphrase(const SecureString& strKeyData, const std::v
         i = EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha512(), &chSalt[0],
                           (unsigned char *)&strKeyData[0], strKeyData.size(), nRounds, chKey, chIV);
     }
+
+    if (nDerivationMethod == 1)
+    {
+        // Passphrase conversion
+        uint256 scryptHash = scrypt_salted_multiround_hash((const void*)strKeyData.c_str(), strKeyData.size(), &chSalt[0], 8, nRounds);
+
+        i = EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha512(), &chSalt[0],
+                          (unsigned char *)&scryptHash, sizeof scryptHash, nRounds, chKey, chIV);
+        OPENSSL_cleanse(&scryptHash, sizeof scryptHash);
+    }
+
 
     if (i != (int)WALLET_CRYPTO_KEY_SIZE)
     {

@@ -6,19 +6,9 @@
 #include "netbase.h"
 #include "util.h"
 #include "sync.h"
-#include "hash.h"
 
 #ifndef WIN32
-#ifdef ANDROID
-#include <fcntl.h>
-#else
 #include <sys/fcntl.h>
-#endif
-#endif
-
-#ifdef _MSC_VER
-#include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
 #endif
 
 #include "strlcpy.h"
@@ -105,20 +95,19 @@ bool static LookupIntern(const char *pszName, std::vector<CNetAddr>& vIP, unsign
     struct addrinfo *aiTrav = aiRes;
     while (aiTrav != NULL && (nMaxSolutions == 0 || vIP.size() < nMaxSolutions))
     {
-        switch (aiTrav->ai_family)
+        if (aiTrav->ai_family == AF_INET)
         {
-            case (AF_INET):
-                assert(aiTrav->ai_addrlen >= sizeof(sockaddr_in));
-                vIP.push_back(CNetAddr(((struct sockaddr_in*)(aiTrav->ai_addr))->sin_addr));
-            break;
+            assert(aiTrav->ai_addrlen >= sizeof(sockaddr_in));
+            vIP.push_back(CNetAddr(((struct sockaddr_in*)(aiTrav->ai_addr))->sin_addr));
+        }
 
 #ifdef USE_IPV6
-            case (AF_INET6):
-                assert(aiTrav->ai_addrlen >= sizeof(sockaddr_in6));
-                vIP.push_back(CNetAddr(((struct sockaddr_in6*)(aiTrav->ai_addr))->sin6_addr));
-            break;
-#endif
+        if (aiTrav->ai_family == AF_INET6)
+        {
+            assert(aiTrav->ai_addrlen >= sizeof(sockaddr_in6));
+            vIP.push_back(CNetAddr(((struct sockaddr_in6*)(aiTrav->ai_addr))->sin6_addr));
         }
+#endif
 
         aiTrav = aiTrav->ai_next;
     }
@@ -307,8 +296,10 @@ bool static Socks5(string strDest, int port, SOCKET& hSocket)
         case 0x03:
         {
             ret = recv(hSocket, pchRet3, 1, 0) != 1;
-            if (ret)
+            if (ret) {
+                closesocket(hSocket);
                 return error("Error reading from proxy");
+            }
             int nRecv = pchRet3[0];
             ret = recv(hSocket, pchRet3, nRecv, 0) != nRecv;
             break;
@@ -515,6 +506,7 @@ bool ConnectSocket(const CService &addrDest, SOCKET& hSocketRet, int nTimeout)
             return false;
         break;
     default:
+        closesocket(hSocket);
         return false;
     }
 
@@ -546,7 +538,9 @@ bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest
 
     switch(nameproxy.second) {
         default:
-        case 4: return false;
+        case 4:
+            closesocket(hSocket);
+            return false;
         case 5:
             if (!Socks5(strDest, port, hSocket))
                 return false;

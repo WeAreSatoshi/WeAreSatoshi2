@@ -1,15 +1,9 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "macdockiconhandler.h"
 
 #include <QImageWriter>
 #include <QMenu>
-#include <QBuffer>
+#include <QTemporaryFile>
 #include <QWidget>
-
-extern void qt_mac_set_dock_menu(QMenu*);
 
 #undef slots
 #include <Cocoa/Cocoa.h>
@@ -64,8 +58,6 @@ MacDockIconHandler::MacDockIconHandler() : QObject()
     this->setMainWindow(NULL);
 #if QT_VERSION < 0x050000
     qt_mac_set_dock_menu(this->m_dockMenu);
-#elif QT_VERSION >= 0x050200
-    this->m_dockMenu->setAsDockMenu();
 #endif
     [pool release];
 }
@@ -97,14 +89,14 @@ void MacDockIconHandler::setIcon(const QIcon &icon)
         QSize size = icon.actualSize(QSize(128, 128));
         QPixmap pixmap = icon.pixmap(size);
 
-        // Write image into a R/W buffer from raw pixmap, then save the image.
-        QBuffer notificationBuffer;
-        if (!pixmap.isNull() && notificationBuffer.open(QIODevice::ReadWrite)) {
-            QImageWriter writer(&notificationBuffer, "PNG");
+        // write temp file drm (could also be done through QIODevice [memory])
+        QTemporaryFile notificationIconFile;
+        if (!pixmap.isNull() && notificationIconFile.open()) {
+            QImageWriter writer(&notificationIconFile, "PNG");
             if (writer.write(pixmap.toImage())) {
-                NSData* macImgData = [NSData dataWithBytes:notificationBuffer.buffer().data()
-                                             length:notificationBuffer.buffer().size()];
-                image =  [[NSImage alloc] initWithData:macImgData];
+                const char *cString = notificationIconFile.fileName().toUtf8().data();
+                NSString *macString = [NSString stringWithCString:cString encoding:NSUTF8StringEncoding];
+                image =  [[NSImage alloc] initWithContentsOfFile:macString];
             }
         }
 

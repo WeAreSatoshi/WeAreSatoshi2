@@ -7,7 +7,6 @@
 
 #include "db.h"
 #include "base58.h"
-#include "keystore.h"
 
 class CKeyPool;
 class CAccount;
@@ -86,13 +85,11 @@ public:
     bool WriteKey(const CPubKey& vchPubKey, const CPrivKey& vchPrivKey, const CKeyMetadata &keyMeta)
     {
         nWalletDBUpdated++;
+
         if(!Write(std::make_pair(std::string("keymeta"), vchPubKey), keyMeta))
             return false;
 
-        if(!Write(std::make_pair(std::string("key"), vchPubKey.Raw()), vchPrivKey, false))
-            return false;
-
-        return true;
+        return Write(std::make_pair(std::string("key"), vchPubKey.Raw()), vchPrivKey, false);
     }
 
     bool WriteCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret, const CKeyMetadata &keyMeta)
@@ -119,33 +116,10 @@ public:
         return Write(std::make_pair(std::string("mkey"), nID), kMasterKey, true);
     }
 
-    bool EraseMasterKey(unsigned int nID)
-    {
-        nWalletDBUpdated++;
-        return Erase(std::make_pair(std::string("mkey"), nID));
-    }
-
-    bool EraseCryptedKey(const CPubKey& vchPubKey)
-    {
-        return Erase(std::make_pair(std::string("ckey"), vchPubKey.Raw()));
-    }
-
     bool WriteCScript(const uint160& hash, const CScript& redeemScript)
     {
         nWalletDBUpdated++;
         return Write(std::make_pair(std::string("cscript"), hash), redeemScript, false);
-    }
-
-    bool WriteWatchOnly(const CScript &dest)
-    {
-        nWalletDBUpdated++;
-        return Write(std::make_pair(std::string("watchs"), dest), '1');
-    }
-
-    bool EraseWatchOnly(const CScript &dest)
-    {
-        nWalletDBUpdated++;
-        return Erase(std::make_pair(std::string("watchs"), dest));
     }
 
     bool WriteBestBlock(const CBlockLocator& locator)

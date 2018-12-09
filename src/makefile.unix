@@ -3,13 +3,12 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 USE_UPNP:=0
-USE_LEVELDB:=0
 USE_IPV6:=1
 
 LINK:=$(CXX)
 ARCH:=$(system lscpu | head -n 1 | awk '{print $2}')
 
-DEFS=-DBOOST_SPIRIT_THREADSAFE -D__STDC_FORMAT_MACROS
+DEFS=-DBOOST_SPIRIT_THREADSAFE
 
 DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
 LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
@@ -105,6 +104,17 @@ xCXXFLAGS=-O2 $(EXT_OPTIONS) -pthread -Wall -Wextra -Wno-ignored-qualifiers -Wfo
 xLDFLAGS=$(LDHARDENING) $(LDFLAGS)
 
 OBJS= \
+   obj/groestl.o \
+    obj/blake.o \
+    obj/bmw.o \
+    obj/skein.o \
+    obj/keccak.o \
+    obj/shavite.o \
+    obj/jh.o \
+    obj/luffa.o \
+    obj/cubehash.o \
+    obj/echo.o \
+    obj/simd.o \
     obj/alert.o \
     obj/version.o \
     obj/checkpoints.o \
@@ -119,7 +129,6 @@ OBJS= \
     obj/miner.o \
     obj/main.o \
     obj/net.o \
-    obj/stun.o \
     obj/protocol.o \
     obj/bitcoinrpc.o \
     obj/rpcdump.o \
@@ -136,44 +145,30 @@ OBJS= \
     obj/noui.o \
     obj/kernel.o \
     obj/pbkdf2.o \
-    obj/scrypt.o
+    obj/scrypt.o \
+    obj/scrypt-arm.o \
+    obj/scrypt-x86.o \
+    obj/scrypt-x86_64.o \
+    obj/zerocoin/Accumulator.o \
+    obj/zerocoin/AccumulatorProofOfKnowledge.o \
+    obj/zerocoin/Coin.o \
+    obj/zerocoin/CoinSpend.o \
+    obj/zerocoin/Commitment.o \
+    obj/zerocoin/ParamGeneration.o \
+    obj/zerocoin/Params.o \
+    obj/zerocoin/SerialNumberSignatureOfKnowledge.o \
+    obj/zerocoin/SpendMetaData.o \
+    obj/zerocoin/ZeroTest.o
 
-all: novacoind
+all: cryptcoind
 
-#
-# LevelDB support
-#
-ifeq (${USE_LEVELDB}, 1)
 LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
-DEFS += $(addprefix -I,$(CURDIR)/leveldb/include) -DUSE_LEVELDB
+DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
 OBJS += obj/txdb-leveldb.o
 leveldb/libleveldb.a:
 	@echo "Building LevelDB ..."; cd leveldb; make libleveldb.a libmemenv.a; cd ..;
 obj/txdb-leveldb.o: leveldb/libleveldb.a
-endif
-ifneq (${USE_LEVELDB}, 1)
-OBJS += obj/txdb-bdb.o
-endif
-
-ifeq (${USE_ASM}, 1)
-OBJS += obj/scrypt-arm.o obj/scrypt-x86.o obj/scrypt-x86_64.o
-
-obj/scrypt-x86.o: scrypt-x86.S
-	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
-
-obj/scrypt-x86_64.o: scrypt-x86_64.S
-	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
-
-obj/scrypt-arm.o: scrypt-arm.S
-	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
-endif
-ifneq (${USE_ASM}, 1)
-OBJS += obj/scrypt-generic.o
-
-obj/scrypt-generic.o: scrypt-generic.c
-	$(CC) -c $(xCXXFLAGS) -MMD -o $@ $<
-endif
 
 # auto-generated dependencies:
 -include obj/*.P
@@ -183,7 +178,22 @@ obj/build.h: FORCE
 version.cpp: obj/build.h
 DEFS += -DHAVE_BUILD_INFO
 
+obj/scrypt-x86.o: scrypt-x86.S
+	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
+obj/scrypt-x86_64.o: scrypt-x86_64.S
+	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+
+obj/scrypt-arm.o: scrypt-arm.S
+	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+	
+obj/%.o: %.c
+	$(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+              -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	      
+	rm -f $(@:%.o=%.d)
 obj/%.o: %.cpp
 	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
 	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
@@ -191,13 +201,22 @@ obj/%.o: %.cpp
 	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
 	  rm -f $(@:%.o=%.d)
 
-novacoind: $(OBJS:obj/%=obj/%)
+obj/zerocoin/%.o: zerocoin/%.cpp
+	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	  rm -f $(@:%.o=%.d)
+
+cryptcoind: $(OBJS:obj/%=obj/%)
 	$(LINK) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
 
 clean:
-	-rm -f novacoind
+	-rm -f cryptcoind
 	-rm -f obj/*.o
+	-rm -f obj/zerocoin/*.o
 	-rm -f obj/*.P
+	-rm -f obj/zerocoin/*.P
 	-rm -f obj/build.h
 
 FORCE:

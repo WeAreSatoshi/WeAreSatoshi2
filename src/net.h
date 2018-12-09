@@ -6,10 +6,8 @@
 #define BITCOIN_NET_H
 
 #include <deque>
-#ifndef Q_MOC_RUN
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
-#endif
 #include <openssl/rand.h>
 
 #ifndef WIN32
@@ -20,7 +18,6 @@
 #include "netbase.h"
 #include "protocol.h"
 #include "addrman.h"
-#include "hash.h"
 
 class CRequestTracker;
 class CNode;
@@ -29,8 +26,8 @@ extern int nBestHeight;
 
 
 
-inline uint64_t ReceiveBufferSize() { return 1000*GetArg("-maxreceivebuffer", 5*1000); }
-inline uint64_t SendBufferSize() { return 1000*GetArg("-maxsendbuffer", 1*1000); }
+inline unsigned int ReceiveBufferSize() { return 1000*GetArg("-maxreceivebuffer", 5*1000); }
+inline unsigned int SendBufferSize() { return 1000*GetArg("-maxsendbuffer", 1*1000); }
 
 void AddOneShot(std::string strDest);
 bool RecvLine(SOCKET hSocket, std::string& strLine);
@@ -38,8 +35,7 @@ bool GetMyExternalIP(CNetAddr& ipRet);
 void AddressCurrentlyConnected(const CService& addr);
 CNode* FindNode(const CNetAddr& ip);
 CNode* FindNode(const CService& ip);
-CNode* ConnectNode(CAddress addrConnect, const char *strDest = NULL, int64_t nTimeout=0);
-bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false);
+CNode* ConnectNode(CAddress addrConnect, const char *strDest = NULL);
 void MapPort();
 unsigned short GetListenPort();
 bool BindListenPort(const CService &bindAddr, std::string& strError=REF(std::string()));
@@ -109,8 +105,7 @@ enum threadId
     THREAD_ADDEDCONNECTIONS,
     THREAD_DUMPADDRESS,
     THREAD_RPCHANDLER,
-    THREAD_MINTER,
-    THREAD_SCRIPTCHECK,
+    THREAD_STAKE_MINER,
 
     THREAD_MAX
 };
@@ -122,12 +117,10 @@ extern uint64_t nLocalServices;
 extern uint64_t nLocalHostNonce;
 extern CAddress addrSeenByPeer;
 extern boost::array<int, THREAD_MAX> vnThreadsRunning;
-extern CAddrMan addrman;
+extern CAddrman addrman;
 
 extern std::vector<CNode*> vNodes;
 extern CCriticalSection cs_vNodes;
-extern std::vector<std::string> vAddedNodes;
-extern CCriticalSection cs_vAddedNodes;
 extern std::map<CInv, CDataStream> mapRelay;
 extern std::deque<std::pair<int64_t, CInv> > vRelayExpiration;
 extern CCriticalSection cs_mapRelay;
@@ -144,15 +137,11 @@ public:
     int64_t nLastRecv;
     int64_t nTimeConnected;
     std::string addrName;
-    int32_t nVersion;
+    int nVersion;
     std::string strSubVer;
     bool fInbound;
-    int64_t nReleaseTime;
-    int32_t nStartingHeight;
-    int32_t nMisbehavior;
-    uint64_t nSendBytes;
-    uint64_t nRecvBytes;
-    bool fSyncNode;
+    int nStartingHeight;
+    int nMisbehavior;
 };
 
 
@@ -168,20 +157,18 @@ public:
     SOCKET hSocket;
     CDataStream vSend;
     CDataStream vRecv;
-    uint64_t nSendBytes;
-    uint64_t nRecvBytes;
     CCriticalSection cs_vSend;
     CCriticalSection cs_vRecv;
     int64_t nLastSend;
     int64_t nLastRecv;
     int64_t nLastSendEmpty;
     int64_t nTimeConnected;
-    int32_t nHeaderStart;
-    uint32_t nMessageStart;
+    int nHeaderStart;
+    unsigned int nMessageStart;
     CAddress addr;
     std::string addrName;
     CService addrLocal;
-    int32_t nVersion;
+    int nVersion;
     std::string strSubVer;
     bool fOneShot;
     bool fClient;
@@ -190,8 +177,8 @@ public:
     bool fSuccessfullyConnected;
     bool fDisconnect;
     CSemaphoreGrant grantOutbound;
-protected:
     int nRefCount;
+protected:
 
     // Denial-of-service detection/prevention
     // Key is IP address, value is banned-until-time
@@ -200,14 +187,12 @@ protected:
     int nMisbehavior;
 
 public:
-    int64_t nReleaseTime;
     std::map<uint256, CRequestTracker> mapRequests;
     CCriticalSection cs_mapRequests;
     uint256 hashContinue;
     CBlockIndex* pindexLastGetBlocksBegin;
     uint256 hashLastGetBlocksEnd;
-    int32_t nStartingHeight;
-    bool fStartSync;
+    int nStartingHeight;
 
     // flood relay
     std::vector<CAddress> vAddrToSend;
@@ -228,8 +213,6 @@ public:
         hSocket = hSocketIn;
         nLastSend = 0;
         nLastRecv = 0;
-        nSendBytes = 0;
-        nRecvBytes = 0;
         nLastSendEmpty = GetTime();
         nTimeConnected = GetTime();
         nHeaderStart = -1;
@@ -245,16 +228,14 @@ public:
         fSuccessfullyConnected = false;
         fDisconnect = false;
         nRefCount = 0;
-        nReleaseTime = 0;
         hashContinue = 0;
         pindexLastGetBlocksBegin = 0;
         hashLastGetBlocksEnd = 0;
         nStartingHeight = -1;
-        fStartSync = false;
         fGetAddr = false;
         nMisbehavior = 0;
         hashCheckpointKnown = 0;
-        setInventoryKnown.max_size((size_t)SendBufferSize() / 1000);
+        setInventoryKnown.max_size(SendBufferSize() / 1000);
 
         // Be shy and don't send version until we hear
         if (hSocket != INVALID_SOCKET && !fInbound)
@@ -270,13 +251,7 @@ public:
         }
     }
 
-
 private:
-    // Network usage totals
-    static CCriticalSection cs_totalBytesRecv;
-    static CCriticalSection cs_totalBytesSent;
-    static uint64_t nTotalBytesRecv;
-    static uint64_t nTotalBytesSent;
     CNode(const CNode&);
     void operator=(const CNode&);
 public:
@@ -284,15 +259,13 @@ public:
 
     int GetRefCount()
     {
-        return std::max(nRefCount, 0) + (GetTime() < nReleaseTime ? 1 : 0);
+        assert(nRefCount >= 0);
+        return nRefCount;
     }
 
-    CNode* AddRef(int64_t nTimeout=0)
+    CNode* AddRef()
     {
-        if (nTimeout != 0)
-            nReleaseTime = std::max(nReleaseTime, GetTime() + nTimeout);
-        else
-            nRefCount++;
+        nRefCount++;
         return this;
     }
 
@@ -341,7 +314,7 @@ public:
         // the key is the earliest time the request can be sent
         int64_t& nRequestTime = mapAlreadyAskedFor[inv];
         if (fDebugNet)
-            printf("askfor %s   %" PRId64 " (%s)\n", inv.ToString().c_str(), nRequestTime, DateTimeStrFormat("%H:%M:%S", nRequestTime/1000000).c_str());
+            printf("askfor %s   %"PRId64" (%s)\n", inv.ToString().c_str(), nRequestTime, DateTimeStrFormat("%H:%M:%S", nRequestTime/1000000).c_str());
 
         // Make sure not to reuse time indexes to keep things in the same order
         int64_t nNow = (GetTime() - 1) * 1000000;
@@ -362,9 +335,9 @@ public:
         ENTER_CRITICAL_SECTION(cs_vSend);
         if (nHeaderStart != -1)
             AbortMessage();
-        nHeaderStart = (int32_t)vSend.size();
+        nHeaderStart = vSend.size();
         vSend << CMessageHeader(pszCommand, 0);
-        nMessageStart = (uint32_t)vSend.size();
+        nMessageStart = vSend.size();
         if (fDebug)
             printf("sending: %s ", pszCommand);
     }
@@ -395,12 +368,12 @@ public:
             return;
 
         // Set the size
-        uint32_t nSize = (uint32_t) vSend.size() - nMessageStart;
+        unsigned int nSize = vSend.size() - nMessageStart;
         memcpy((char*)&vSend[nHeaderStart] + CMessageHeader::MESSAGE_SIZE_OFFSET, &nSize, sizeof(nSize));
 
         // Set the checksum
         uint256 hash = Hash(vSend.begin() + nMessageStart, vSend.end());
-        uint32_t nChecksum = 0;
+        unsigned int nChecksum = 0;
         memcpy(&nChecksum, &hash, sizeof(nChecksum));
         assert(nMessageStart - nHeaderStart >= CMessageHeader::CHECKSUM_OFFSET + sizeof(nChecksum));
         memcpy((char*)&vSend[nHeaderStart] + CMessageHeader::CHECKSUM_OFFSET, &nChecksum, sizeof(nChecksum));
@@ -418,7 +391,7 @@ public:
     {
         if (nHeaderStart < 0)
             return;
-        int nSize = (int) vSend.size() - nMessageStart;
+        int nSize = vSend.size() - nMessageStart;
         if (nSize > 0)
             EndMessage();
         else
@@ -661,12 +634,6 @@ public:
     static bool IsBanned(CNetAddr ip);
     bool Misbehaving(int howmuch); // 1 == a little, 100 == a lot
     void copyStats(CNodeStats &stats);
-    // Network stats
-    static void RecordBytesRecv(uint64_t bytes);
-    static void RecordBytesSent(uint64_t bytes);
-
-    static uint64_t GetTotalBytesRecv();
-    static uint64_t GetTotalBytesSent();
 };
 
 inline void RelayInventory(const CInv& inv)

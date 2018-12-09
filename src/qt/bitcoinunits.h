@@ -4,7 +4,6 @@
 #include <QString>
 #include <QAbstractListModel>
 
-#include <stdint.h>
 /** Bitcoin unit definitions. Encapsulates parsing and formatting
    and serves as list model for drop-down selection boxes.
 */
@@ -42,13 +41,11 @@ public:
     //! Number of decimals left
     static int decimals(int unit);
     //! Format as string
-    static QString format(int unit, qint64 amount, bool plussign=false, uint8_t nNumberOfZeros=2);
+    static QString format(int unit, qint64 amount, bool plussign=false);
     //! Format as string (with unit)
-    static QString formatWithUnit(int unit, qint64 amount, bool plussign=false, uint8_t nNumberOfZeros=2);
+    static QString formatWithUnit(int unit, qint64 amount, bool plussign=false);
     //! Parse string to coin amount
     static bool parse(int unit, const QString &value, qint64 *val_out);
-    //! Gets title for amount column including current display unit if optionsModel reference available */
-    static QString getAmountColumnTitle(int unit);
     ///@}
 
     //! @name AbstractListModel implementation

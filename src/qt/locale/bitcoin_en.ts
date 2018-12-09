@@ -5,23 +5,23 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
-        <source>About NovaCoin</source>
-        <translation>About NovaCoin</translation>
+        <source>About hackcoin</source>
+        <translation>About hackcoin</translation>
     </message>
     <message>
         <location line="+39"/>
-        <source>&lt;b&gt;NovaCoin&lt;/b&gt; version</source>
-        <translation>&lt;b&gt;NovaCoin&lt;/b&gt; version</translation>
+        <source>&lt;b&gt;hackcoin&lt;/b&gt; version</source>
+        <translation>&lt;b&gt;hackcoin&lt;/b&gt; version</translation>
     </message>
     <message>
         <location line="+41"/>
         <source>Copyright © 2009-2014 The Bitcoin developers
-Copyright © 2012-2014 The NovaCoin developers</source>
-        <translation>Copyright © 2009-2014 The Bitcoin developers
-Copyright © 2012-2014 The NovaCoin developers</translation>
+Copyright © 2012-2014 The NovaCoin developers
+Copyright © 2014 The hackcoin developers</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+15"/>
         <source>
 This is experimental software.
 
@@ -65,8 +65,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-46"/>
-        <source>These are your NovaCoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
-        <translation>These are your NovaCoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</translation>
+        <source>These are your hackcoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
+        <translation>These are your hackcoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -80,23 +80,23 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="+11"/>
-        <source>Sign a message to prove you own a NovaCoin address</source>
-        <translation>Sign a message to prove you own a NovaCoin address</translation>
+        <source>Sign a message to prove you own a hackcoin address</source>
+        <translation>Sign a message to prove you own a hackcoin address</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sign &amp;Message</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Delete the currently selected address from the list</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-14"/>
-        <source>Verify a message to ensure it was signed with a specified NovaCoin address</source>
-        <translation>Verify a message to ensure it was signed with a specified NovaCoin address</translation>
+        <source>Verify a message to ensure it was signed with a specified hackcoin address</source>
+        <translation>Verify a message to ensure it was signed with a specified hackcoin address</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -142,7 +142,7 @@ This product includes software developed by the OpenSSL Project for use in the O
 <context>
     <name>AddressTableModel</name>
     <message>
-        <location filename="../addresstablemodel.cpp" line="+142"/>
+        <location filename="../addresstablemodel.cpp" line="+144"/>
         <source>Label</source>
         <translation>Label</translation>
     </message>
@@ -180,7 +180,17 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Repeat new passphrase</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="+33"/>
+        <location line="+33"/>
+        <source>Serves to disable the trivial sendmoney when OS account compromised. Provides no real security.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>For staking only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../askpassphrasedialog.cpp" line="+35"/>
         <source>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
         <translation>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</translation>
     </message>
@@ -190,7 +200,7 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Encrypt wallet</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+7"/>
         <source>This operation needs your wallet passphrase to unlock the wallet.</source>
         <translation>This operation needs your wallet passphrase to unlock the wallet.</translation>
     </message>
@@ -237,52 +247,52 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+15"/>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+103"/>
         <location line="+24"/>
         <source>Warning: The Caps Lock key is on!</source>
         <translation>Warning: The Caps Lock key is on!</translation>
     </message>
     <message>
-        <location line="-130"/>
-        <location line="+58"/>
+        <location line="-133"/>
+        <location line="+60"/>
         <source>Wallet encrypted</source>
         <translation>Wallet encrypted</translation>
     </message>
     <message>
-        <location line="-56"/>
-        <source>NovaCoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
-        <translation>NovaCoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</translation>
+        <location line="-58"/>
+        <source>hackcoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
+        <translation>hackcoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</translation>
     </message>
     <message>
         <location line="+13"/>
         <location line="+7"/>
-        <location line="+42"/>
+        <location line="+44"/>
         <location line="+6"/>
         <source>Wallet encryption failed</source>
         <translation>Wallet encryption failed</translation>
     </message>
     <message>
-        <location line="-54"/>
+        <location line="-56"/>
         <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
         <translation>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</translation>
     </message>
     <message>
         <location line="+7"/>
-        <location line="+48"/>
+        <location line="+50"/>
         <source>The supplied passphrases do not match.</source>
         <translation>The supplied passphrases do not match.</translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="-38"/>
         <source>Wallet unlock failed</source>
         <translation>Wallet unlock failed</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+11"/>
+        <location line="+12"/>
         <location line="+19"/>
         <source>The passphrase entered for the wallet decryption was incorrect.</source>
         <translation>The passphrase entered for the wallet decryption was incorrect.</translation>
@@ -301,17 +311,17 @@ This product includes software developed by the OpenSSL Project for use in the O
 <context>
     <name>BitcoinGUI</name>
     <message>
-        <location filename="../bitcoingui.cpp" line="+257"/>
+        <location filename="../bitcoingui.cpp" line="+282"/>
         <source>Sign &amp;message...</source>
         <translation>Sign &amp;message...</translation>
     </message>
     <message>
-        <location line="+237"/>
+        <location line="+251"/>
         <source>Synchronizing with network...</source>
         <translation>Synchronizing with network...</translation>
     </message>
     <message>
-        <location line="-299"/>
+        <location line="-319"/>
         <source>&amp;Overview</source>
         <translation>&amp;Overview</translation>
     </message>
@@ -366,9 +376,9 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>Quit application</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Show information about NovaCoin</source>
-        <translation>Show information about NovaCoin</translation>
+        <location line="+6"/>
+        <source>Show information about hackcoin</source>
+        <translation>Show information about hackcoin</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -396,116 +406,12 @@ This product includes software developed by the OpenSSL Project for use in the O
         <translation>&amp;Backup Wallet...</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>&amp;Dump Wallet...</source>
-        <translation>&amp;Dump Wallet...</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Dump Wallet</source>
-        <translation>Dump Wallet</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Import Wallet</source>
-        <translation>Import Wallet</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Error</source>
-        <translation>Error</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Warning</source>
-        <translation>Warning</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Information</source>
-        <translation>Information</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Dump failed</source>
-        <translation>Dump failed</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Import failed</source>
-        <translation>Import failed</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Dump successful</source>
-        <translation>Dump successful</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Import successful</source>
-        <translation>Import successful</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>An error happened while trying to import the keys.
-Some or all keys from:
- %1,
- were not imported into your wallet.</source>
-        <translation>An error happened while trying to import the keys.
-Some or all keys from:
- %1,
- were not imported into your wallet.</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Keys were saved to this file:
-%2</source>
-        <translation>Keys were saved to this file:
-%2</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>All keys from:
- %1,
- were imported into your wallet.</source>
-        <translation>All keys from:
- %1,
- were imported into your wallet.</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>An error happened while trying to save the keys to your location.
-Keys were not saved.</source>
-        <translation>An error happened while trying to save the keys to your location.
-Keys were not saved.</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Wallet dump (*.txt)</source>
-        <translation>Wallet dump (*.txt)</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>&amp;Import Wallet...</source>
-        <translation>&amp;Import Wallet...</translation>
-    </message>
-    <message>
         <location line="+2"/>
         <source>&amp;Change Passphrase...</source>
         <translation>&amp;Change Passphrase...</translation>
     </message>
-    <message>
-        <location line="+8"/>
-        <source>Dump keys to a text file</source>
-        <translation>Dump keys to a text file</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Import keys into a wallet</source>
-        <translation>Import keys into a wallet</translation>
-    </message>
     <message numerus="yes">
-        <location line="+241"/>
+        <location line="+259"/>
         <source>~%n block(s) remaining</source>
         <translation>
             <numerusform>~%n block remaining</numerusform>
@@ -518,27 +424,27 @@ Keys were not saved.</translation>
         <translation>Downloaded %1 of %2 blocks of transaction history (%3% done).</translation>
     </message>
     <message>
-        <location line="-242"/>
+        <location line="-256"/>
         <source>&amp;Export...</source>
         <translation>&amp;Export...</translation>
     </message>
     <message>
-        <location line="-58"/>
-        <source>Send coins to a NovaCoin address</source>
-        <translation>Send coins to a NovaCoin address</translation>
+        <location line="-64"/>
+        <source>Send coins to a hackcoin address</source>
+        <translation>Send coins to a hackcoin address</translation>
     </message>
     <message>
-        <location line="+45"/>
-        <source>Modify configuration options for NovaCoin</source>
-        <translation>Modify configuration options for NovaCoin</translation>
+        <location line="+47"/>
+        <source>Modify configuration options for hackcoin</source>
+        <translation>Modify configuration options for hackcoin</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+18"/>
         <source>Export the data in the current tab to a file</source>
         <translation>Export the data in the current tab to a file</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-14"/>
         <source>Encrypt or decrypt wallet</source>
         <translation>Encrypt or decrypt wallet</translation>
     </message>
@@ -553,7 +459,7 @@ Keys were not saved.</translation>
         <translation>Change the passphrase used for wallet encryption</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+10"/>
         <source>&amp;Debug window</source>
         <translation>&amp;Debug window</translation>
     </message>
@@ -568,9 +474,9 @@ Keys were not saved.</translation>
         <translation>&amp;Verify message...</translation>
     </message>
     <message>
-        <location line="-186"/>
-        <source>NovaCoin</source>
-        <translation>NovaCoin</translation>
+        <location line="-202"/>
+        <source>hackcoin</source>
+        <translation>hackcoin</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -578,9 +484,9 @@ Keys were not saved.</translation>
         <translation>Wallet</translation>
     </message>
     <message>
-        <location line="+168"/>
-        <source>&amp;About NovaCoin</source>
-        <translation>&amp;About NovaCoin</translation>
+        <location line="+180"/>
+        <source>&amp;About hackcoin</source>
+        <translation>&amp;About hackcoin</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -588,7 +494,22 @@ Keys were not saved.</translation>
         <translation>&amp;Show / Hide</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+9"/>
+        <source>Unlock wallet</source>
+        <translation type="unfinished">Unlock wallet</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>&amp;Lock Wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Lock wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <source>&amp;File</source>
         <translation>&amp;File</translation>
     </message>
@@ -598,12 +519,12 @@ Keys were not saved.</translation>
         <translation>&amp;Settings</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+8"/>
         <source>&amp;Help</source>
         <translation>&amp;Help</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Tabs toolbar</source>
         <translation>Tabs toolbar</translation>
     </message>
@@ -621,15 +542,15 @@ Keys were not saved.</translation>
     <message>
         <location line="+0"/>
         <location line="+60"/>
-        <source>NovaCoin client</source>
-        <translation>NovaCoin client</translation>
+        <source>hackcoin client</source>
+        <translation>hackcoin client</translation>
     </message>
     <message numerus="yes">
-        <location line="+69"/>
-        <source>%n active connection(s) to NovaCoin network</source>
+        <location line="+75"/>
+        <source>%n active connection(s) to hackcoin network</source>
         <translation>
-            <numerusform>%n active connection to NovaCoin network</numerusform>
-            <numerusform>%n active connections to NovaCoin network</numerusform>
+            <numerusform>%n active connection to hackcoin network</numerusform>
+            <numerusform>%n active connections to hackcoin network</numerusform>
         </translation>
     </message>
     <message>
@@ -637,16 +558,56 @@ Keys were not saved.</translation>
         <source>Downloaded %1 blocks of transaction history.</source>
         <translation>Downloaded %1 blocks of transaction history.</translation>
     </message>
+    <message>
+        <location line="+413"/>
+        <source>Staking.&lt;br&gt;Your weight is %1&lt;br&gt;Network weight is %2&lt;br&gt;Expected time to earn reward is %3</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Not staking because wallet is locked</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not staking because wallet is offline</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not staking because wallet is syncing</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Not staking because you don&apos;t have mature coins</source>
+        <translation></translation>
+    </message>
     <message numerus="yes">
-        <location line="+22"/>
+        <location line="-403"/>
         <source>%n second(s) ago</source>
         <translation>
             <numerusform>%n second ago</numerusform>
             <numerusform>%n seconds ago</numerusform>
         </translation>
     </message>
+    <message>
+        <location line="-312"/>
+        <source>About hackcoin card</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show information about hackcoin card</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>&amp;Unlock Wallet...</source>
+        <translation></translation>
+    </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+297"/>
         <source>%n minute(s) ago</source>
         <translation>
             <numerusform>%n minute ago</numerusform>
@@ -685,73 +646,9 @@ Keys were not saved.</translation>
         <translation>Last received block was generated %1.</translation>
     </message>
     <message>
-        <location line="+12"/>
-        <source>Wallet is offline</source>
-        <translation>Wallet is offline</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Wallet is locked</source>
-        <translation>Wallet is locked</translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>Blockchain download is in progress</source>
-        <translation>Blockchain download is in progress</translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>Stake miner is active
-Your current stake weight is %1
-Network weight is %2</source>
-        <translation>Stake miner is active
-Your current stake weight is %1
-Network weight is %2</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>No suitable inputs were found</source>
-        <translation>No suitable inputs were found</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Unlo&amp;ck wallet</source>
-        <translation>Unlo&amp;ck wallet</translation>
-    </message>
-    <message>
-        <location line="+26"/>
-        <source>Unlock wallet</source>
-        <translation>Unlock wallet</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Lock wallet</source>
-        <translation>Lock wallet</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <source>&amp;Lock wallet</source>
-        <translation>&amp;Lock wallet</translation>
-    </message>
-    <message>
-        <location line="+31"/>
-        <source>Unlo&amp;ck wallet for mining</source>
-        <translation>Unlo&amp;ck wallet for mining</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>Unlock wallet for mining</source>
-        <translation>Unlock wallet for mining</translation>
-    </message>
-    <message>
-        <location line="+37"/>
-        <source>&amp;Wallet security</source>
-        <translation>&amp;Wallet security</translation>
-    </message>
-    <message>
         <location line="+59"/>
         <source>This transaction is over the size limit.  You can still send it for a fee of %1, which goes to the nodes that process your transaction and helps to support the network.  Do you want to pay the fee?</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+5"/>
@@ -790,21 +687,21 @@ Address: %4
     <message>
         <location line="-15"/>
         <location line="+15"/>
-        <source>URI can not be parsed! This can be caused by an invalid NovaCoin address or malformed URI parameters.</source>
-        <translation>URI can not be parsed! This can be caused by an invalid NovaCoin address or malformed URI parameters.</translation>
+        <source>URI can not be parsed! This can be caused by an invalid hackcoin address or malformed URI parameters.</source>
+        <translation>URI can not be parsed! This can be caused by an invalid hackcoin address or malformed URI parameters.</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+18"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
         <translation>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+25"/>
         <source>Backup Wallet</source>
         <translation>Backup Wallet</translation>
     </message>
@@ -823,10 +720,47 @@ Address: %4
         <source>There was an error trying to save the wallet data to the new location.</source>
         <translation>There was an error trying to save the wallet data to the new location.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+76"/>
+        <source>%n second(s)</source>
+        <translation>
+            <numerusform>%n second</numerusform>
+            <numerusform>%n seconds</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>%n minute(s)</source>
+        <translation>
+            <numerusform>%n minute</numerusform>
+            <numerusform>%n minutes</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>%n hour(s)</source>
+        <translation>
+            <numerusform>%n hour</numerusform>
+            <numerusform>%n hours</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>%n day(s)</source>
+        <translation>
+            <numerusform>%n day</numerusform>
+            <numerusform>%n days</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Not staking</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <location filename="../bitcoin.cpp" line="+109"/>
-        <source>A fatal error occurred. NovaCoin can no longer continue safely and will quit.</source>
-        <translation>A fatal error occurred. NovaCoin can no longer continue safely and will quit.</translation>
+        <source>A fatal error occurred. hackcoin can no longer continue safely and will quit.</source>
+        <translation>A fatal error occurred. hackcoin can no longer continue safely and will quit.</translation>
     </message>
 </context>
 <context>
@@ -850,13 +784,7 @@ Address: %4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
         <location line="+32"/>
-        <source>0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-19"/>
         <source>Bytes:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -866,15 +794,7 @@ Address: %4
         <translation type="unfinished">Amount:</translation>
     </message>
     <message>
-        <location line="+19"/>
-        <location line="+80"/>
-        <location line="+86"/>
-        <location line="+38"/>
-        <source>0.00 NVC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-191"/>
+        <location line="+32"/>
         <source>Priority:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -889,13 +809,12 @@ Address: %4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
         <location filename="../coincontroldialog.cpp" line="+551"/>
         <source>no</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location filename="../forms/coincontroldialog.ui" line="+51"/>
         <source>After Fee:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1013,37 +932,37 @@ Address: %4
     <message>
         <location line="+317"/>
         <source>highest</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>high</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>medium-high</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>medium</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>low-medium</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>low</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>lowest</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+155"/>
@@ -1057,7 +976,7 @@ Address: %4
     </message>
     <message>
         <location line="+10"/>
-        <source>This label turns red, if the transaction size is bigger than 1000 bytes.
+        <source>This label turns red, if the transaction size is bigger than 10000 bytes.
 
  This means a fee of at least %1 per kb is required.
 
@@ -1079,7 +998,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
 
  This means a fee of at least %2 is required. 
 
- Amounts below the minimum fee are shown as DUST.</source>
+ Amounts below 0.546 times the minimum relay fee are shown as DUST.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1154,17 +1073,17 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Edit sending address</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+76"/>
         <source>The entered address &quot;%1&quot; is already in the address book.</source>
         <translation>The entered address &quot;%1&quot; is already in the address book.</translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>The entered address &quot;%1&quot; is not a valid NovaCoin address.</source>
-        <translation>The entered address &quot;%1&quot; is not a valid NovaCoin address.</translation>
+        <location line="-5"/>
+        <source>The entered address &quot;%1&quot; is not a valid hackcoin address.</source>
+        <translation>The entered address &quot;%1&quot; is not a valid hackcoin address.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+10"/>
         <source>Could not unlock wallet.</source>
         <translation>Could not unlock wallet.</translation>
     </message>
@@ -1179,8 +1098,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../guiutil.cpp" line="+420"/>
         <location line="+12"/>
-        <source>NovaCoin-Qt</source>
-        <translation>NovaCoin-Qt</translation>
+        <source>hackcoin-Qt</source>
+        <translation>hackcoin-Qt</translation>
     </message>
     <message>
         <location line="-12"/>
@@ -1242,13 +1161,23 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+31"/>
-        <source>Automatically start NovaCoin after logging in to the system.</source>
-        <translation>Automatically start NovaCoin after logging in to the system.</translation>
+        <source>Reserved amount does not participate in staking and is therefore spendable at any time.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Reserve</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Automatically start hackcoin after logging in to the system.</source>
+        <translation>Automatically start hackcoin after logging in to the system.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>&amp;Start NovaCoin on system login</source>
-        <translation>&amp;Start NovaCoin on system login</translation>
+        <source>&amp;Start hackcoin on system login</source>
+        <translation>&amp;Start hackcoin on system login</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1267,8 +1196,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+6"/>
-        <source>Automatically open the NovaCoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Automatically open the NovaCoin client port on the router. This only works when your router supports UPnP and it is enabled.</translation>
+        <source>Automatically open the hackcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Automatically open the hackcoin client port on the router. This only works when your router supports UPnP and it is enabled.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1277,8 +1206,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
-        <source>Connect to the NovaCoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
-        <translation>Connect to the NovaCoin network through a SOCKS proxy (e.g. when connecting through Tor).</translation>
+        <source>Connect to the hackcoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
+        <translation>Connect to the hackcoin network through a SOCKS proxy (e.g. when connecting through Tor).</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1332,8 +1261,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
-        <source>Minimize instead of exit the application when the window is closed. When this option is enabled, the application will be closed only after selecting Exit in the menu.</source>
-        <translation>Minimize instead of exit the application when the window is closed. When this option is enabled, the application will be closed only after selecting Exit in the menu.</translation>
+        <source>Minimize instead of exit the application when the window is closed. When this option is enabled, the application will be closed only after selecting Quit in the menu.</source>
+        <translation>Minimize instead of exit the application when the window is closed. When this option is enabled, the application will be closed only after selecting Quit in the menu.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1352,8 +1281,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+13"/>
-        <source>The user interface language can be set here. This setting will take effect after restarting NovaCoin.</source>
-        <translation>The user interface language can be set here. This setting will take effect after restarting NovaCoin.</translation>
+        <source>The user interface language can be set here. This setting will take effect after restarting hackcoin.</source>
+        <translation>The user interface language can be set here. This setting will take effect after restarting hackcoin.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -1367,8 +1296,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+9"/>
-        <source>Whether to show NovaCoin addresses in the transaction list or not.</source>
-        <translation>Whether to show NovaCoin addresses in the transaction list or not.</translation>
+        <source>Whether to show hackcoin addresses in the transaction list or not.</source>
+        <translation>Whether to show hackcoin addresses in the transaction list or not.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1378,12 +1307,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+7"/>
         <source>Whether to show coin control features or not.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Display coin &amp;control features (experts only!)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+71"/>
@@ -1406,7 +1335,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>default</translation>
     </message>
     <message>
-        <location line="+148"/>
+        <location line="+149"/>
         <location line="+9"/>
         <source>Warning</source>
         <translation>Warning</translation>
@@ -1414,8 +1343,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-9"/>
         <location line="+9"/>
-        <source>This setting will take effect after restarting NovaCoin.</source>
-        <translation>This setting will take effect after restarting NovaCoin.</translation>
+        <source>This setting will take effect after restarting hackcoin.</source>
+        <translation>This setting will take effect after restarting hackcoin.</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -1432,34 +1361,19 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+33"/>
-        <location line="+212"/>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the NovaCoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>The displayed information may be out of date. Your wallet automatically synchronizes with the NovaCoin network after a connection is established, but this process has not completed yet.</translation>
+        <location line="+231"/>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the hackcoin network after a connection is established, but this process has not completed yet.</source>
+        <translation>The displayed information may be out of date. Your wallet automatically synchronizes with the hackcoin network after a connection is established, but this process has not completed yet.</translation>
     </message>
     <message>
-        <location line="-170"/>
-        <source>Balance:</source>
-        <translation>Balance:</translation>
-    </message>
-    <message>
-        <location line="+29"/>
+        <location line="-160"/>
         <source>Stake:</source>
         <translation>Stake:</translation>
     </message>
     <message>
-        <location line="+84"/>
-        <source>Number of transactions:</source>
-        <translation>Number of transactions:</translation>
-    </message>
-    <message>
-        <location line="-55"/>
+        <location line="+29"/>
         <source>Unconfirmed:</source>
         <translation>Unconfirmed:</translation>
-    </message>
-    <message>
-        <location line="-55"/>
-        <source>Unspendable:</source>
-        <translation>Unspendable:</translation>
     </message>
     <message>
         <location line="-107"/>
@@ -1467,7 +1381,17 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Wallet</translation>
     </message>
     <message>
-        <location line="+136"/>
+        <location line="+49"/>
+        <source>Spendable:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Your current spendable balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+71"/>
         <source>Immature:</source>
         <translation>Immature:</translation>
     </message>
@@ -1477,22 +1401,22 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Mined balance that has not yet matured</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+20"/>
+        <source>Total:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Your current total balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <source>&lt;b&gt;Recent transactions&lt;/b&gt;</source>
         <translation>&lt;b&gt;Recent transactions&lt;/b&gt;</translation>
     </message>
     <message>
-        <location line="-147"/>
-        <source>Your current balance</source>
-        <translation>Your current balance</translation>
-    </message>
-    <message>
-        <location line="-147"/>
-        <source>Your unspendable balance</source>
-        <translation>Your unspendable balance</translation>
-    </message>
-    <message>
-        <location line="+58"/>
+        <location line="-108"/>
         <source>Total of transactions that have yet to be confirmed, and do not yet count toward the current balance</source>
         <translation>Total of transactions that have yet to be confirmed, and do not yet count toward the current balance</translation>
     </message>
@@ -1500,11 +1424,6 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="-29"/>
         <source>Total of coins that was staked, and do not yet count toward the current balance</source>
         <translation>Total of coins that was staked, and do not yet count toward the current balance</translation>
-    </message>
-    <message>
-        <location line="+75"/>
-        <source>Total number of transactions in wallet</source>
-        <translation>Total number of transactions in wallet</translation>
     </message>
     <message>
         <location filename="../overviewpage.cpp" line="+113"/>
@@ -1659,8 +1578,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
-        <source>Show the NovaCoin-Qt help message to get a list with possible NovaCoin command-line options.</source>
-        <translation>Show the NovaCoin-Qt help message to get a list with possible NovaCoin command-line options.</translation>
+        <source>Show the hackcoin-Qt help message to get a list with possible hackcoin command-line options.</source>
+        <translation>Show the hackcoin-Qt help message to get a list with possible hackcoin command-line options.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1679,13 +1598,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="-104"/>
-        <source>NovaCoin - Debug window</source>
-        <translation>NovaCoin - Debug window</translation>
+        <source>hackcoin - Debug window</source>
+        <translation>hackcoin - Debug window</translation>
     </message>
     <message>
         <location line="+25"/>
-        <source>NovaCoin Core</source>
-        <translation>NovaCoin Core</translation>
+        <source>hackcoin Core</source>
+        <translation>hackcoin Core</translation>
     </message>
     <message>
         <location line="+279"/>
@@ -1694,8 +1613,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+7"/>
-        <source>Open the NovaCoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Open the NovaCoin debug log file from the current data directory. This can take a few seconds for large log files.</translation>
+        <source>Open the hackcoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation>Open the hackcoin debug log file from the current data directory. This can take a few seconds for large log files.</translation>
     </message>
     <message>
         <location line="+102"/>
@@ -1704,8 +1623,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="-33"/>
-        <source>Welcome to the NovaCoin RPC console.</source>
-        <translation>Welcome to the NovaCoin RPC console.</translation>
+        <source>Welcome to the hackcoin RPC console.</source>
+        <translation>Welcome to the hackcoin RPC console.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1778,8 +1697,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+86"/>
         <location line="+86"/>
         <location line="+32"/>
-        <source>0.00 BTC</source>
-        <translation type="unfinished">123.456 BTC {0.00 ?}</translation>
+        <source>0.00 hack</source>
+        <translation type="unfinished">123.456 hack {0.00 ?}</translation>
     </message>
     <message>
         <location line="-191"/>
@@ -1842,14 +1761,14 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Clear &amp;All</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+28"/>
         <source>Balance:</source>
         <translation>Balance:</translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>123.456 BTC</source>
-        <translation>123.456 BTC</translation>
+        <location line="+16"/>
+        <source>123.456 hack</source>
+        <translation>123.456 hack</translation>
     </message>
     <message>
         <location line="+31"/>
@@ -1863,48 +1782,48 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location filename="../sendcoinsdialog.cpp" line="-173"/>
-        <source>Enter a NovaCoin address (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</source>
-        <translation type="unfinished">Enter a NovaCoin address (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</translation>
+        <source>Enter a hackcoin address (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
+        <translation>Enter a hackcoin address (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Copy quantity</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy amount</source>
-        <translation type="unfinished">Copy amount</translation>
+        <translation>Copy amount</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy fee</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy after fee</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy bytes</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy priority</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy low output</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy change</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+86"/>
@@ -1963,8 +1882,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+251"/>
-        <source>WARNING: Invalid Bitcoin address</source>
-        <translation type="unfinished"></translation>
+        <source>WARNING: Invalid hackcoin address</source>
+        <translation></translation>
     </message>
     <message>
         <location line="+13"/>
@@ -1974,7 +1893,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+4"/>
         <source>WARNING: unknown change address</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -2007,8 +1926,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+18"/>
-        <source>The address to send the payment to  (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</source>
-        <translation type="unfinished"></translation>
+        <source>The address to send the payment to  (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
+        <translation></translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2037,8 +1956,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location filename="../sendcoinsentry.cpp" line="+1"/>
-        <source>Enter a NovaCoin address (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</source>
-        <translation>Enter a NovaCoin address (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</translation>
+        <source>Enter a hackcoin address (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
+        <translation>Enter a hackcoin address (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
     </message>
 </context>
 <context>
@@ -2061,8 +1980,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+18"/>
-        <source>The address to sign the message with (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</source>
-        <translation>The address to sign the message with (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</translation>
+        <source>The address to sign the message with (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
+        <translation>The address to sign the message with (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2098,8 +2017,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+21"/>
-        <source>Sign the message to prove you own this NovaCoin address</source>
-        <translation>Sign the message to prove you own this NovaCoin address</translation>
+        <source>Sign the message to prove you own this hackcoin address</source>
+        <translation>Sign the message to prove you own this hackcoin address</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2125,13 +2044,13 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+21"/>
-        <source>The address the message was signed with (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</source>
-        <translation>The address the message was signed with (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</translation>
+        <source>The address the message was signed with (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
+        <translation>The address the message was signed with (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
     </message>
     <message>
         <location line="+40"/>
-        <source>Verify the message to ensure it was signed with the specified NovaCoin address</source>
-        <translation>Verify the message to ensure it was signed with the specified NovaCoin address</translation>
+        <source>Verify the message to ensure it was signed with the specified hackcoin address</source>
+        <translation>Verify the message to ensure it was signed with the specified hackcoin address</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2141,8 +2060,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../signverifymessagedialog.cpp" line="+27"/>
         <location line="+3"/>
-        <source>Enter a NovaCoin address (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</source>
-        <translation>Enter a NovaCoin address (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</translation>
+        <source>Enter a hackcoin address (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</source>
+        <translation>Enter a hackcoin address (e.g. hackcoinfwYhBmGXcFP2Po1NpRUEiK8km2)</translation>
     </message>
     <message>
         <location line="-2"/>
@@ -2151,8 +2070,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+3"/>
-        <source>Enter NovaCoin signature</source>
-        <translation>Enter NovaCoin signature</translation>
+        <source>Enter hackcoin signature</source>
+        <translation>Enter hackcoin signature</translation>
     </message>
     <message>
         <location line="+82"/>
@@ -2222,14 +2141,6 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
 </context>
 <context>
-    <name>TrafficGraphWidget</name>
-    <message>
-        <location filename="../trafficgraphwidget.cpp" line="+79"/>
-        <source>KB/s</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>TransactionDesc</name>
     <message>
         <location filename="../transactiondesc.cpp" line="+19"/>
@@ -2246,6 +2157,11 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+8"/>
+        <source>conflicted</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>%1/offline</source>
         <translation>%1/offline</translation>
     </message>
@@ -2368,12 +2284,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+3"/>
-        <source>Generated coins must mature 520 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>Generated coins must mature 520 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</translation>
-    </message>
-    <message>
-        <source>Staked coins must wait 520 blocks before they can return to balance and be spent.  When you generated this proof-of-stake block, it was broadcast to the network to be added to the block chain.  If it fails to get into the chain, it will change to \&quot;not accepted\&quot; and not be a valid stake.  This may occasionally happen if another node generates a proof-of-stake block within a few seconds of yours.</source>
-        <translation type="obsolete">Staked coins must wait 520 blocks before they can return to balance and be spent.  When you generated this proof-of-stake block, it was broadcast to the network to be added to the block chain.  If it fails to get into the chain, it will change to \&quot;not accepted\&quot; and not be a valid stake.  This may occasionally happen if another node generates a proof-of-stake block within a few seconds of yours.</translation>
+        <source>Generated coins must mature 510 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
+        <translation>Generated coins must mature 510 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2451,44 +2363,51 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <source>Amount</source>
         <translation>Amount</translation>
     </message>
-    <message numerus="yes">
-        <location line="+57"/>
-        <source>Open for %n block(s)</source>
-        <translation>
-            <numerusform>Open for %n block</numerusform>
-            <numerusform>Open for %n blocks</numerusform>
-        </translation>
-    </message>
     <message>
-        <location line="+3"/>
+        <location line="+60"/>
         <source>Open until %1</source>
         <translation>Open until %1</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Offline (%1 confirmations)</source>
-        <translation>Offline (%1 confirmations)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Unconfirmed (%1 of %2 confirmations)</source>
-        <translation>Unconfirmed (%1 of %2 confirmations)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+12"/>
         <source>Confirmed (%1 confirmations)</source>
         <translation>Confirmed (%1 confirmations)</translation>
     </message>
     <message numerus="yes">
-        <location line="+8"/>
-        <source>Mined balance will be available when it matures in %n more block(s)</source>
+        <location line="-15"/>
+        <source>Open for %n more block(s)</source>
         <translation>
-            <numerusform>Mined balance will be available when it matures in %n more block</numerusform>
-            <numerusform>Mined balance will be available when it matures in %n more blocks</numerusform>
+            <numerusform>Open for %n more block</numerusform>
+            <numerusform>Open for %n more blocks</numerusform>
         </translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
+        <source>Offline</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Unconfirmed</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Confirming (%1 of %2 recommended confirmations)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Conflicted</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Immature (%1 confirmations, will be available after %2)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>This block was not received by any other nodes and will probably not be accepted!</source>
         <translation>This block was not received by any other nodes and will probably not be accepted!</translation>
     </message>
@@ -2498,7 +2417,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Generated but not accepted</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+42"/>
         <source>Received with</source>
         <translation>Received with</translation>
     </message>
@@ -2518,17 +2437,17 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Payment to yourself</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+2"/>
         <source>Mined</source>
         <translation>Mined</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+38"/>
         <source>(n/a)</source>
         <translation>(n/a)</translation>
     </message>
     <message>
-        <location line="+199"/>
+        <location line="+190"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
         <translation>Transaction status. Hover over this field to show number of confirmations.</translation>
     </message>
@@ -2607,7 +2526,6 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>To yourself</translation>
     </message>
     <message>
-        <location line="+1"/>
         <location line="+1"/>
         <source>Mined</source>
         <translation>Mined</translation>
@@ -2734,45 +2652,47 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
 <context>
     <name>bitcoin-core</name>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="+124"/>
-        <source>NovaCoin version</source>
-        <translation>NovaCoin version</translation>
+        <location filename="../bitcoinstrings.cpp" line="+33"/>
+        <source>hackcoin version</source>
+        <translation>hackcoin version</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+1"/>
         <source>Usage:</source>
         <translation>Usage:</translation>
     </message>
     <message>
-        <source>Send command to -server or bitcoind</source>
-        <translation type="obsolete">Send command to -server or bitcoind</translation>
+        <location line="+1"/>
+        <source>Send command to -server or hackcoind</source>
+        <translation>Send command to -server or hackcoind</translation>
     </message>
     <message>
-        <location line="-47"/>
+        <location line="+1"/>
         <source>List commands</source>
         <translation>List commands</translation>
     </message>
     <message>
-        <location line="-12"/>
+        <location line="+1"/>
         <source>Get help for a command</source>
         <translation>Get help for a command</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+2"/>
         <source>Options:</source>
         <translation>Options:</translation>
     </message>
     <message>
-        <location line="+23"/>
-        <source>Specify configuration file (default: novacoin.conf)</source>
-        <translation>Specify configuration file (default: novacoin.conf)</translation>
+        <location line="+2"/>
+        <source>Specify configuration file (default: hackcoin.conf)</source>
+        <translation>Specify configuration file (default: hackcoin.conf)</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Specify pid file (default: novacoind.pid)</source>
-        <translation>Specify pid file (default: novacoind.pid)</translation>
+        <location line="+1"/>
+        <source>Specify pid file (default: hackcoind.pid)</source>
+        <translation>Specify pid file (default: hackcoind.pid)</translation>
     </message>
     <message>
+        <location line="+2"/>
         <source>Specify wallet file (within data directory)</source>
         <translation>Specify wallet file (within data directory)</translation>
     </message>
@@ -2782,7 +2702,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Specify data directory</translation>
     </message>
     <message>
-        <location line="-8"/>
+        <location line="+2"/>
         <source>Set database cache size in megabytes (default: 25)</source>
         <translation>Set database cache size in megabytes (default: 25)</translation>
     </message>
@@ -2792,195 +2712,192 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Set database disk log size in megabytes (default: 100)</translation>
     </message>
     <message>
-        <location line="-28"/>
-        <source>Listen for connections on &lt;port&gt; (default: 7777 or testnet: 17777)</source>
-        <translation>Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333)</translation>
+        <location line="+6"/>
+        <source>Listen for connections on &lt;port&gt; (default: 15714 or testnet: 25714)</source>
+        <translation>Listen for connections on &lt;port&gt; (default: 15714 or testnet: 25714)</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+1"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
         <translation>Maintain at most &lt;n&gt; connections to peers (default: 125)</translation>
     </message>
     <message>
-        <location line="-32"/>
+        <location line="+3"/>
         <source>Connect to a node to retrieve peer addresses, and disconnect</source>
         <translation>Connect to a node to retrieve peer addresses, and disconnect</translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+1"/>
         <source>Specify your own public address</source>
         <translation>Specify your own public address</translation>
     </message>
     <message>
-        <location line="-74"/>
+        <location line="+5"/>
         <source>Bind to given address. Use [host]:port notation for IPv6</source>
         <translation>Bind to given address. Use [host]:port notation for IPv6</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+2"/>
+        <source>Stake your coins to support network and gain reward (default: 1)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
         <translation>Threshold for disconnecting misbehaving peers (default: 100)</translation>
     </message>
     <message>
-        <location line="-108"/>
+        <location line="+1"/>
         <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
         <translation>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</translation>
     </message>
     <message>
-        <location line="-27"/>
+        <location line="-44"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv4: %s</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+51"/>
         <source>Detach block and address databases. Increases shutdown time (default: 0)</source>
         <translation>Detach block and address databases. Increases shutdown time (default: 0)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+109"/>
         <source>Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-5"/>
         <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  </source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Error: Wallet unlocked for block minting only, unable to create transaction.</source>
-        <translation type="unfinished"></translation>
+        <location line="-87"/>
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 15715 or testnet: 25715)</source>
+        <translation></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 8344 or testnet: 18344)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+28"/>
+        <location line="-11"/>
         <source>Accept command line and JSON-RPC commands</source>
         <translation>Accept command line and JSON-RPC commands</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+101"/>
         <source>Error: Transaction creation failed  </source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-5"/>
         <source>Error: Wallet locked, unable to create transaction  </source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Find peers using DNS lookup (default: 1)</source>
-        <translation>Find peers using DNS lookup (default: 1)</translation>
-    </message>
-    <message>
-        <source>Sync checkpoints policy (default: strict)</source>
-        <translation>Sync checkpoints policy (default: strict)</translation>
-    </message>
-    <message>
-        <location line="+5"/>
+        <location line="-8"/>
         <source>Importing blockchain data file.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Importing bootstrap blockchain data file.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="-88"/>
         <source>Run in the background as a daemon and accept commands</source>
         <translation>Run in the background as a daemon and accept commands</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+1"/>
         <source>Use the test network</source>
         <translation>Use the test network</translation>
     </message>
     <message>
-        <location line="-93"/>
+        <location line="-24"/>
         <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
         <translation>Accept connections from outside (default: 1 if no -proxy or -connect)</translation>
     </message>
     <message>
-        <location line="-52"/>
+        <location line="-38"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+117"/>
         <source>Error initializing database environment %s! To recover, BACKUP THAT DIRECTORY, then remove everything from it except for wallet.dat.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-20"/>
         <source>Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</source>
         <translation>Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+11"/>
         <source>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</source>
         <translation>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</translation>
     </message>
     <message>
-        <source>Warning: Displayed transactions may not be correct! You may need to upgrade, or other nodes may need to upgrade.</source>
-        <translation type="obsolete">Warning: Displayed transactions may not be correct! You may need to upgrade, or other nodes may need to upgrade.</translation>
+        <location line="+61"/>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong hackcoin will not work properly.</source>
+        <translation>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong hackcoin will not work properly.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong NovaCoin will not work properly.</source>
-        <translation>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong NovaCoin will not work properly.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="-31"/>
         <source>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
         <translation>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-18"/>
         <source>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
         <translation>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="-30"/>
         <source>Attempt to recover private keys from a corrupt wallet.dat</source>
         <translation>Attempt to recover private keys from a corrupt wallet.dat</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Block creation options:</source>
         <translation>Block creation options:</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="-62"/>
         <source>Connect only to the specified node(s)</source>
         <translation>Connect only to the specified node(s)</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
         <translation>Discover own IP address (default: 1 when listening and no -externalip)</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+94"/>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
         <translation>Failed to listen on any port. Use -listen=0 if you want this.</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="-90"/>
+        <source>Find peers using DNS lookup (default: 1)</source>
+        <translation>Find peers using DNS lookup (default: 1)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Sync checkpoints policy (default: strict)</source>
+        <translation>Sync checkpoints policy (default: strict)</translation>
+    </message>
+    <message>
+        <location line="+83"/>
         <source>Invalid -tor address: &apos;%s&apos;</source>
         <translation>Invalid -tor address: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Invalid amount for -reservebalance=&lt;amount&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="-82"/>
         <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</source>
         <translation>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</translation>
     </message>
@@ -2990,12 +2907,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-16"/>
         <source>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</source>
         <translation>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+28"/>
         <source>Output extra debugging information. Implies all other -debug* options</source>
         <translation>Output extra debugging information. Implies all other -debug* options</translation>
     </message>
@@ -3005,27 +2922,22 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Output extra network debugging information</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+1"/>
         <source>Prepend debug output with timestamp</source>
         <translation>Prepend debug output with timestamp</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+35"/>
         <source>SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
         <translation>SSL options: (see the Bitcoin Wiki for SSL setup instructions)</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-74"/>
         <source>Select the version of socks proxy to use (4-5, default: 5)</source>
         <translation>Select the version of socks proxy to use (4-5, default: 5)</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Send command to -server or novacoind</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+41"/>
         <source>Send trace/debug info to console instead of debug.log file</source>
         <translation>Send trace/debug info to console instead of debug.log file</translation>
     </message>
@@ -3035,122 +2947,163 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Send trace/debug info to debugger</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+28"/>
         <source>Set maximum block size in bytes (default: 250000)</source>
         <translation>Set maximum block size in bytes (default: 250000)</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-1"/>
         <source>Set minimum block size in bytes (default: 0)</source>
         <translation>Set minimum block size in bytes (default: 0)</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-29"/>
         <source>Shrink debug.log file on client startup (default: 1 when no -debug)</source>
         <translation>Shrink debug.log file on client startup (default: 1 when no -debug)</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-42"/>
         <source>Specify connection timeout in milliseconds (default: 5000)</source>
         <translation>Specify connection timeout in milliseconds (default: 5000)</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+109"/>
         <source>Unable to sign checkpoint, wrong checkpointkey?
 </source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="-80"/>
         <source>Use UPnP to map the listening port (default: 0)</source>
         <translation>Use UPnP to map the listening port (default: 0)</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-1"/>
         <source>Use UPnP to map the listening port (default: 1 when listening)</source>
         <translation>Use UPnP to map the listening port (default: 1 when listening)</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-25"/>
         <source>Use proxy to reach tor hidden services (default: same as -proxy)</source>
         <translation>Use proxy to reach tor hidden services (default: same as -proxy)</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+42"/>
         <source>Username for JSON-RPC connections</source>
         <translation>Username for JSON-RPC connections</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+47"/>
         <source>Verifying database integrity...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+57"/>
+        <source>WARNING: syncronized checkpoint violation detected, but skipped!</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>Warning: Disk space is low!</source>
         <translation>Warning: Disk space is low!</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-2"/>
         <source>Warning: This version is obsolete, upgrade required!</source>
         <translation>Warning: This version is obsolete, upgrade required!</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-48"/>
         <source>wallet.dat corrupt, salvage failed</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location line="-44"/>
+        <location line="-54"/>
         <source>Password for JSON-RPC connections</source>
         <translation>Password for JSON-RPC connections</translation>
     </message>
     <message>
-        <location line="-52"/>
+        <location line="-84"/>
+        <source>%s, you must set a rpcpassword in the configuration file:
+ %s
+It is recommended you use the following random password:
+rpcuser=hackcoinrpc
+rpcpassword=%s
+(you do not need to remember this password)
+The username and password MUST NOT be the same.
+If the file does not exist, create it with owner-readable-only file permissions.
+It is also recommended to set alertnotify so you are notified of problems;
+for example: alertnotify=echo %%s | mail -s &quot;hackcoin Alert&quot; admin@foo.com
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Find peers using internet relay chat (default: 0)</source>
+        <translation type="unfinished">Find peers using internet relay chat (default: 1) {0)?}</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Sync time with other nodes. Disable if time on your system is precise e.g. syncing with NTP (default: 1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>When creating transactions, ignore inputs with value less than this (default: 0.01)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>Allow JSON-RPC connections from specified IP address</source>
         <translation>Allow JSON-RPC connections from specified IP address</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+1"/>
         <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
         <translation>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="+1"/>
         <source>Execute command when the best block changes (%s in cmd is replaced by block hash)</source>
         <translation>Execute command when the best block changes (%s in cmd is replaced by block hash)</translation>
     </message>
     <message>
+        <location line="+3"/>
         <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
-        <translation type="obsolete">Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</translation>
+        <translation>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</translation>
     </message>
     <message>
-        <location line="+119"/>
+        <location line="+3"/>
+        <source>Require a confirmations for change (default: 0)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Enforce transaction scripts to use canonical PUSH operators (default: 1)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Execute command when a relevant alert is received (%s in cmd is replaced by message)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Upgrade wallet to latest format</source>
         <translation>Upgrade wallet to latest format</translation>
     </message>
     <message>
-    <location line="+120"/>
-        <source>Require a confirmations for change (default: 0)</source>
-        <translation>Require a confirmations for change (default: 0)</translation>
-    </message>
-    <message>
-        <location line="+121"/>
-        <source>Enforce transaction scripts to use canonical PUSH operators (default: 1)</source>
-        <translation>Enforce transaction scripts to use canonical PUSH operators (default: 1)</translation>
-    </message>
-    <message>
-        <location line="-16"/>
+        <location line="+1"/>
         <source>Set key pool size to &lt;n&gt; (default: 100)</source>
         <translation>Set key pool size to &lt;n&gt; (default: 100)</translation>
     </message>
     <message>
-        <location line="-14"/>
+        <location line="+1"/>
         <source>Rescan the block chain for missing wallet transactions</source>
         <translation>Rescan the block chain for missing wallet transactions</translation>
     </message>
     <message>
-        <location line="-27"/>
+        <location line="+2"/>
         <source>How many blocks to check at startup (default: 2500, 0 = all)</source>
         <translation>How many blocks to check at startup (default: 2500, 0 = all)</translation>
     </message>
@@ -3160,17 +3113,17 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>How thorough the block verification is (0-6, default: 1)</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+1"/>
         <source>Imports blocks from external blk000?.dat file</source>
         <translation>Imports blocks from external blk000?.dat file</translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+8"/>
         <source>Use OpenSSL (https) for JSON-RPC connections</source>
         <translation>Use OpenSSL (https) for JSON-RPC connections</translation>
     </message>
     <message>
-        <location line="-22"/>
+        <location line="+1"/>
         <source>Server certificate file (default: server.cert)</source>
         <translation>Server certificate file (default: server.cert)</translation>
     </message>
@@ -3180,51 +3133,62 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Server private key (default: server.pem)</translation>
     </message>
     <message>
-        <location line="-125"/>
+        <location line="+1"/>
         <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
         <translation>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
     </message>
     <message>
-        <location line="+137"/>
+        <location line="+53"/>
+        <source>Error: Wallet unlocked for staking only, unable to create transaction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="-158"/>
         <source>This help message</source>
         <translation>This help message</translation>
     </message>
     <message>
+        <location line="+95"/>
         <source>Wallet %s resides outside data directory %s.</source>
-        <translation type="obsolete">Wallet %s resides outside data directory %s.</translation>
+        <translation>Wallet %s resides outside data directory %s.</translation>
     </message>
     <message>
-        <location line="-129"/>
-        <source>Cannot obtain a lock on data directory %s.  NovaCoin is probably already running.</source>
-        <translation>Cannot obtain a lock on data directory %s.  NovaCoin is probably already running.</translation>
+        <location line="+1"/>
+        <source>Cannot obtain a lock on data directory %s.  hackcoin is probably already running.</source>
+        <translation>Cannot obtain a lock on data directory %s.  hackcoin is probably already running.</translation>
     </message>
     <message>
-        <location line="+99"/>
-        <source>NovaCoin</source>
-        <translation>NovaCoin</translation>
+        <location line="-98"/>
+        <source>hackcoin</source>
+        <translation>hackcoin</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+140"/>
         <source>Unable to bind to %s on this computer (bind returned error %d, %s)</source>
         <translation>Unable to bind to %s on this computer (bind returned error %d, %s)</translation>
     </message>
     <message>
-        <location line="-70"/>
+        <location line="-130"/>
         <source>Connect through socks proxy</source>
         <translation>Connect through socks proxy</translation>
     </message>
     <message>
-        <location line="-11"/>
+        <location line="+3"/>
         <source>Allow DNS lookups for -addnode, -seednode and -connect</source>
         <translation>Allow DNS lookups for -addnode, -seednode and -connect</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+122"/>
         <source>Loading addresses...</source>
         <translation>Loading addresses...</translation>
     </message>
     <message>
-        <location line="-26"/>
+        <location line="-15"/>
         <source>Error loading blkindex.dat</source>
         <translation>Error loading blkindex.dat</translation>
     </message>
@@ -3234,27 +3198,27 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Error loading wallet.dat: Wallet corrupted</translation>
     </message>
     <message>
+        <location line="+4"/>
+        <source>Error loading wallet.dat: Wallet requires newer version of hackcoin</source>
+        <translation>Error loading wallet.dat: Wallet requires newer version of hackcoin</translation>
+    </message>
+    <message>
         <location line="+1"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of NovaCoin</source>
-        <translation>Error loading wallet.dat: Wallet requires newer version of NovaCoin</translation>
+        <source>Wallet needed to be rewritten: restart hackcoin to complete</source>
+        <translation>Wallet needed to be rewritten: restart hackcoin to complete</translation>
     </message>
     <message>
-        <location line="+76"/>
-        <source>Wallet needed to be rewritten: restart NovaCoin to complete</source>
-        <translation>Wallet needed to be rewritten: restart NovaCoin to complete</translation>
-    </message>
-    <message>
-        <location line="-78"/>
+        <location line="+1"/>
         <source>Error loading wallet.dat</source>
         <translation>Error loading wallet.dat</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="-16"/>
         <source>Invalid -proxy address: &apos;%s&apos;</source>
         <translation>Invalid -proxy address: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="-1"/>
         <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
         <translation>Unknown network specified in -onlynet: &apos;%s&apos;</translation>
     </message>
@@ -3264,77 +3228,72 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Unknown -socks proxy version requested: %i</translation>
     </message>
     <message>
-        <location line="-76"/>
+        <location line="+4"/>
         <source>Cannot resolve -bind address: &apos;%s&apos;</source>
         <translation>Cannot resolve -bind address: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
         <translation>Cannot resolve -externalip address: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="-24"/>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
         <translation>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="-14"/>
+        <location line="+44"/>
         <source>Error: could not start node</source>
         <translation>Error: could not start node</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+11"/>
         <source>Sending...</source>
         <translation>Sending...</translation>
     </message>
     <message>
-        <location line="-26"/>
+        <location line="+5"/>
         <source>Invalid amount</source>
         <translation>Invalid amount</translation>
     </message>
     <message>
-        <location line="-5"/>
+        <location line="+1"/>
         <source>Insufficient funds</source>
         <translation>Insufficient funds</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="-34"/>
         <source>Loading block index...</source>
         <translation>Loading block index...</translation>
     </message>
     <message>
-        <location line="-43"/>
+        <location line="-103"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
         <translation>Add a node to connect to and attempt to keep the connection open</translation>
     </message>
     <message>
-        <location line="-22"/>
-        <source>Unable to bind to %s on this computer. NovaCoin is probably already running.</source>
-        <translation>Unable to bind to %s on this computer. NovaCoin is probably already running.</translation>
+        <location line="+122"/>
+        <source>Unable to bind to %s on this computer. hackcoin is probably already running.</source>
+        <translation>Unable to bind to %s on this computer. hackcoin is probably already running.</translation>
     </message>
     <message>
-        <location line="+49"/>
-        <source>Find peers using internet relay chat (default: 1)</source>
-        <translation>Find peers using internet relay chat (default: 1)</translation>
-    </message>
-    <message>
-        <location line="-2"/>
+        <location line="-97"/>
         <source>Fee per KB to add to transactions you send</source>
         <translation>Fee per KB to add to transactions you send</translation>
     </message>
     <message>
-        <location line="-3"/>
-        <source>When creating transactions, ignore inputs with value less than this (default: %s)</source>
-        <translation>When creating transactions, ignore inputs with value less than this (default: %s)</translation>
+        <location line="+55"/>
+        <source>Invalid amount for -mininput=&lt;amount&gt;: &apos;%s&apos;</source>
+        <translation></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+25"/>
         <source>Loading wallet...</source>
         <translation>Loading wallet...</translation>
     </message>
     <message>
-        <location line="-38"/>
+        <location line="+8"/>
         <source>Cannot downgrade wallet</source>
         <translation>Cannot downgrade wallet</translation>
     </message>
@@ -3344,51 +3303,32 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Cannot initialize keypool</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+1"/>
         <source>Cannot write default address</source>
         <translation>Cannot write default address</translation>
     </message>
     <message>
-        <location line="+47"/>
+        <location line="+1"/>
         <source>Rescanning...</source>
         <translation>Rescanning...</translation>
     </message>
     <message>
-        <location line="-42"/>
+        <location line="+5"/>
         <source>Done loading</source>
         <translation>Done loading</translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="-167"/>
         <source>To use the %s option</source>
         <translation>To use the %s option</translation>
     </message>
     <message>
-        <location line="-148"/>
-        <source>%s, you must set a rpcpassword in the configuration file:
- %s
-It is recommended you use the following random password:
-rpcuser=bitcoinrpc
-rpcpassword=%s
-(you do not need to remember this password)
-If the file does not exist, create it with owner-readable-only file permissions.
-</source>
-        <translation>%s, you must set a rpcpassword in the configuration file:
- %s
-It is recommended you use the following random password:
-rpcuser=bitcoinrpc
-rpcpassword=%s
-(you do not need to remember this password)
-If the file does not exist, create it with owner-readable-only file permissions.
-</translation>
-    </message>
-    <message>
-        <location line="+87"/>
+        <location line="+14"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location line="-27"/>
+        <location line="+6"/>
         <source>You must set rpcpassword=&lt;password&gt; in the configuration file:
 %s
 If the file does not exist, create it with owner-readable-only file permissions.</source>

@@ -1,41 +1,20 @@
+cryptcoin is a PoW/PoS-based cryptocurrency.
 
-NovaCoin official development tree
 
-NovaCoin - a hybrid scrypt PoW + PoS based cryptocurrency.
+RPC Port: 27115
+P2P Port: 27114
 
-* 10 minutes stake spacing
-* 30 minutes PoW spacing
-* Balanced PoW blocks and stakes weighting
-* The PoW subsidy halves every x64 multiply of PoW difficulty
-* The PoS interest halves every x64 multiply of PoS difficulty
-* Maximum PoW reward is 100 coins
-* Maximum PoS reward is 10 coins
-* No deterministic limit of the supply, currently ~ 960174 coins mined
+Algorithm: X11 POW/POS
 
-Development process
-===========================
+Short: CRYPT
 
-Developers work in their own trees, then submit pull requests when
-they think their feature or bug fix is ready.
-
-The patch will be accepted if there is broad consensus that it is a
-good thing.  Developers should expect to rework and resubmit patches
-if they don't match the project's coding conventions (see coding.txt)
-or are controversial.
-
-The master branch is regularly built and tested, but is not guaranteed
-to be completely stable. Tags are regularly created to indicate new
-official, stable release versions of NovaCoin.
-
-Feature branches are created when there are major new features being
-worked on by several people.
-
-From time to time a pull request will become outdated. If this occurs, and
-the pull is no longer automatically mergeable; a comment on the pull will
-be used to issue a warning of closure. The pull will be closed 15 days
-after the warning if action is not taken by the author. Pull requests closed
-in this manner will have their corresponding issue labeled 'stagnant'.
-
-Issues with no commits will be given a similar warning, and closed after
-15 days from their last activity. Issues closed in this manner will be 
-labeled 'stale'.
+Total coin: 11 Million cap.
+Block time: 1.5 minute
+Stake Interest: 2.75%
+Minimum Stake Age, 12 hours, One Year Max age
+Reward:
+500 to block 2000 -> 1,000,000
+250,to block 4000 -> 1,000,000
+125, to block 8000 -> 1,000,000
+62.5, to block 16000 -> 1,000,000
+31.25,to block 224000 -> 7,000,000

@@ -20,7 +20,7 @@ using namespace boost;
 
 
 unsigned int nWalletDBUpdated;
-extern bool fUseMemoryLog;
+
 
 
 //
@@ -111,31 +111,6 @@ bool CDBEnv::Open(boost::filesystem::path pathEnv_)
     fDbEnvInit = true;
     fMockDb = false;
 
-#ifndef USE_LEVELDB
-    // Check that the number of locks is sufficient (to prevent chain fork possibility, read http://bitcoin.org/may15 for more info)
-    u_int32_t nMaxLocks;
-    if (!dbenv.get_lk_max_locks(&nMaxLocks))
-    {
-        int nBlocks, nDeepReorg;
-        std::string strMessage;
-
-        nBlocks = nMaxLocks / 48768;
-        nDeepReorg = (nBlocks - 1) / 2;
-
-        printf("Final lk_max_locks is %lu, sufficient for (worst case) %d block%s in a single transaction (up to a %d-deep reorganization)\n", (unsigned long)nMaxLocks, nBlocks, (nBlocks == 1) ? "" : "s", nDeepReorg);
-        if (nDeepReorg < 3)
-        {
-            if (nBlocks < 1)
-                strMessage = strprintf(_("Warning: DB_CONFIG has set_lk_max_locks %lu, which may be too low for a single block. If this limit is reached, NovaCoin may stop working."), (unsigned long)nMaxLocks);
-            else
-                strMessage = strprintf(_("Warning: DB_CONFIG has set_lk_max_locks %lu, which may be too low for a common blockchain reorganization. If this limit is reached, NovaCoin may stop working."), (unsigned long)nMaxLocks);
-
-            strMiscWarning = strMessage;
-            printf("*** %s\n", strMessage.c_str());
-        }
-    }
-#endif
-
     return true;
 }
 
@@ -156,7 +131,7 @@ void CDBEnv::MakeMock()
     dbenv.set_lk_max_objects(10000);
     dbenv.set_flags(DB_AUTO_COMMIT, 1);
 #ifdef DB_LOG_IN_MEMORY
-    dbenv.log_set_config(DB_LOG_IN_MEMORY, fUseMemoryLog ? 1 : 0);
+    dbenv.log_set_config(DB_LOG_IN_MEMORY, 1);
 #endif
     int ret = dbenv.open(NULL,
                      DB_CREATE     |
@@ -204,9 +179,18 @@ bool CDBEnv::Salvage(std::string strFile, bool fAggressive,
 
     Db db(&dbenv, 0);
     int result = db.verify(strFile.c_str(), NULL, &strDump, flags);
-    if (result != 0)
+    if (result == DB_VERIFY_BAD)
     {
-        printf("ERROR: db salvage failed\n");
+        printf("Error: Salvage found errors, all data may not be recoverable.\n");
+        if (!fAggressive)
+        {
+            printf("Error: Rerun with aggressive mode to ignore errors and continue.\n");
+            return false;
+        }
+    }
+    if (result != 0 && result != DB_VERIFY_BAD)
+    {
+        printf("ERROR: db salvage failed: %d\n",result);
         return false;
     }
 
@@ -455,7 +439,7 @@ bool CDB::Rewrite(const string& strFile, const char* pszSkip)
                 return fSuccess;
             }
         }
-        Sleep(100);
+        MilliSleep(100);
     }
     return false;
 }
@@ -494,7 +478,7 @@ void CDBEnv::Flush(bool fShutdown)
             else
                 mi++;
         }
-        printf("DBFlush(%s)%s ended %15" PRId64 "ms\n", fShutdown ? "true" : "false", fDbEnvInit ? "" : " db not started", GetTimeMillis() - nStart);
+        printf("DBFlush(%s)%s ended %15"PRId64"ms\n", fShutdown ? "true" : "false", fDbEnvInit ? "" : " db not started", GetTimeMillis() - nStart);
         if (fShutdown)
         {
             char** listp;
@@ -518,7 +502,7 @@ CAddrDB::CAddrDB()
     pathAddr = GetDataDir() / "peers.dat";
 }
 
-bool CAddrDB::Write(const CAddrMan& addr)
+bool CAddrDB::Write(const CAddrman& addr)
 {
     // Generate random temporary filename
     unsigned short randv = 0;
@@ -556,7 +540,7 @@ bool CAddrDB::Write(const CAddrMan& addr)
     return true;
 }
 
-bool CAddrDB::Read(CAddrMan& addr)
+bool CAddrDB::Read(CAddrman& addr)
 {
     // open input file, and associate with CAutoFile
     FILE *file = fopen(pathAddr.string().c_str(), "rb");
@@ -565,9 +549,9 @@ bool CAddrDB::Read(CAddrMan& addr)
         return error("CAddrman::Read() : open failed");
 
     // use file size to size memory buffer
-    int fileSize = GetFilesize(filein);
+    int fileSize = boost::filesystem::file_size(pathAddr);
     int dataSize = fileSize - sizeof(uint256);
-    //Don't try to resize to a negative number if file is small
+    // Don't try to resize to a negative number if file is small
     if ( dataSize < 0 ) dataSize = 0;
     vector<unsigned char> vchData;
     vchData.resize(dataSize);
@@ -599,7 +583,7 @@ bool CAddrDB::Read(CAddrMan& addr)
         if (memcmp(pchMsgTmp, pchMessageStart, sizeof(pchMsgTmp)))
             return error("CAddrman::Read() : invalid network magic number");
 
-        // de-serialize address data into one CAddrMan object
+        // de-serialize address data into one CAddrman object
         ssPeers >> addr;
     }
     catch (std::exception &e) {

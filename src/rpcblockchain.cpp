@@ -45,6 +45,9 @@ double GetDifficulty(const CBlockIndex* blockindex)
 
 double GetPoWMHashPS()
 {
+    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+        return 0;
+
     int nPoWInterval = 72;
     int64_t nTargetSpacingWorkMin = 30, nTargetSpacingWork = 30;
 
@@ -89,10 +92,7 @@ double GetPoSKernelPS()
         pindex = pindex->pprev;
     }
 
-    if (!nStakesHandled)
-        return 0;
-
-    return dStakeKernelsTriedAvg / nStakesTime;
+    return nStakesTime ? dStakeKernelsTriedAvg / nStakesTime : 0;
 }
 
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPrintTransactionDetail)
@@ -121,18 +121,19 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPri
     result.push_back(Pair("flags", strprintf("%s%s", blockindex->IsProofOfStake()? "proof-of-stake" : "proof-of-work", blockindex->GeneratedStakeModifier()? " stake-modifier": "")));
     result.push_back(Pair("proofhash", blockindex->IsProofOfStake()? blockindex->hashProofOfStake.GetHex() : blockindex->GetBlockHash().GetHex()));
     result.push_back(Pair("entropybit", (int)blockindex->GetStakeEntropyBit()));
-    result.push_back(Pair("modifier", strprintf("%016" PRIx64, blockindex->nStakeModifier)));
+    result.push_back(Pair("modifier", strprintf("%016"PRIx64, blockindex->nStakeModifier)));
     result.push_back(Pair("modifierchecksum", strprintf("%08x", blockindex->nStakeModifierChecksum)));
     Array txinfo;
     BOOST_FOREACH (const CTransaction& tx, block.vtx)
     {
         if (fPrintTransactionDetail)
         {
-            CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
-            ssTx << tx;
-            string strHex = HexStr(ssTx.begin(), ssTx.end());
+            Object entry;
 
-            txinfo.push_back(strHex);
+            entry.push_back(Pair("txid", tx.GetHash().GetHex()));
+            TxToJSON(tx, 0, entry);
+
+            txinfo.push_back(entry);
         }
         else
             txinfo.push_back(tx.GetHash().GetHex());
@@ -140,7 +141,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPri
 
     result.push_back(Pair("tx", txinfo));
 
-    if ( block.IsProofOfStake() )
+    if (block.IsProofOfStake())
         result.push_back(Pair("signature", HexStr(block.vchBlockSig.begin(), block.vchBlockSig.end())));
 
     return result;
@@ -187,10 +188,10 @@ Value settxfee(const Array& params, bool fHelp)
     if (fHelp || params.size() < 1 || params.size() > 1 || AmountFromValue(params[0]) < MIN_TX_FEE)
         throw runtime_error(
             "settxfee <amount>\n"
-            "<amount> is a real and is rounded to the nearest " + FormatMoney(MIN_TX_FEE));
+            "<amount> is a real and is rounded to the nearest 0.01");
 
     nTransactionFee = AmountFromValue(params[0]);
-    nTransactionFee = (nTransactionFee / MIN_TX_FEE) * MIN_TX_FEE;  // round to minimum fee
+    nTransactionFee = (nTransactionFee / CENT) * CENT;  // round to cent
 
     return true;
 }
@@ -273,7 +274,7 @@ Value getblockbynumber(const Array& params, bool fHelp)
     return blockToJSON(block, pblockindex, params.size() > 1 ? params[1].get_bool() : false);
 }
 
-// get information of sync-checkpoint
+// ppcoin: get information of sync-checkpoint
 Value getcheckpoint(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -288,27 +289,6 @@ Value getcheckpoint(const Array& params, bool fHelp)
     pindexCheckpoint = mapBlockIndex[Checkpoints::hashSyncCheckpoint];
     result.push_back(Pair("height", pindexCheckpoint->nHeight));
     result.push_back(Pair("timestamp", DateTimeStrFormat(pindexCheckpoint->GetBlockTime()).c_str()));
-
-    if (Checkpoints::checkpointMessage.vchSig.size() != 0)
-    {
-        Object msgdata;
-        CUnsignedSyncCheckpoint checkpoint;
-
-        CDataStream sMsg(Checkpoints::checkpointMessage.vchMsg, SER_NETWORK, PROTOCOL_VERSION);
-        sMsg >> checkpoint;
-
-        Object parsed; // message version and data (block hash)
-        parsed.push_back(Pair("version", checkpoint.nVersion));
-        parsed.push_back(Pair("hash", checkpoint.hashCheckpoint.GetHex().c_str()));
-        msgdata.push_back(Pair("parsed", parsed));
-
-        Object raw; // raw checkpoint message data
-        raw.push_back(Pair("data", HexStr(Checkpoints::checkpointMessage.vchMsg).c_str()));
-        raw.push_back(Pair("signature", HexStr(Checkpoints::checkpointMessage.vchSig).c_str()));
-        msgdata.push_back(Pair("raw", raw));
-
-        result.push_back(Pair("data", msgdata));
-    }
 
     // Check that the block satisfies synchronized checkpoint
     if (CheckpointsMode == Checkpoints::STRICT)

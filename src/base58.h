@@ -51,7 +51,7 @@ inline std::string EncodeBase58(const unsigned char* pbegin, const unsigned char
         if (!BN_div(&dv, &rem, &bn, &bn58, pctx))
             throw bignum_error("EncodeBase58 : BN_div failed");
         bn = dv;
-        unsigned int c = rem.getuint32();
+        unsigned int c = rem.getulong();
         str += pszBase58[c];
     }
 
@@ -94,7 +94,7 @@ inline bool DecodeBase58(const char* psz, std::vector<unsigned char>& vchRet)
                 return false;
             break;
         }
-        bnChar.setuint32((uint32_t)(p1 - pszBase58));
+        bnChar.setulong(p1 - pszBase58);
         if (!BN_mul(&bn, &bn, &bn58, pctx))
             throw bignum_error("DecodeBase58 : BN_mul failed");
         bn += bnChar;
@@ -253,10 +253,10 @@ public:
     bool operator> (const CBase58Data& b58) const { return CompareTo(b58) >  0; }
 };
 
-/** base58-encoded Bitcoin addresses.
- * Public-key-hash-addresses have version 0 (or 111 testnet).
+/** base58-encoded addresses.
+ * Public-key-hash-addresses have version 25 (or 111 testnet).
  * The data vector contains RIPEMD160(SHA256(pubkey)), where pubkey is the serialized public key.
- * Script-hash-addresses have version 5 (or 196 testnet).
+ * Script-hash-addresses have version 85 (or 196 testnet).
  * The data vector contains RIPEMD160(SHA256(cscript)), where cscript is the serialized redemption script.
  */
 class CBitcoinAddress;
@@ -276,8 +276,8 @@ class CBitcoinAddress : public CBase58Data
 public:
     enum
     {
-        PUBKEY_ADDRESS = 8,
-        SCRIPT_ADDRESS = 20,
+        PUBKEY_ADDRESS = 34,  // C
+        SCRIPT_ADDRESS = 28,
         PUBKEY_ADDRESS_TEST = 111,
         SCRIPT_ADDRESS_TEST = 196,
     };

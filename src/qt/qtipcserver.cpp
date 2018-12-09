@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <boost/version.hpp>
-#if defined(WIN32) && BOOST_VERSION <= 104900
+#if defined(WIN32) && BOOST_VERSION == 104900
 #define BOOST_INTERPROCESS_HAS_WINDOWS_KERNEL_BOOTTIME
 #define BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME
 #endif
@@ -18,10 +18,8 @@
 #include <boost/interprocess/ipc/message_queue.hpp>
 #include <boost/version.hpp>
 
-#ifndef _MSC_VER
-#if defined(WIN32) && (!defined(BOOST_INTERPROCESS_HAS_WINDOWS_KERNEL_BOOTTIME) || !defined(BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME)) && BOOST_VERSION <= 104900
+#if defined(WIN32) && (!defined(BOOST_INTERPROCESS_HAS_WINDOWS_KERNEL_BOOTTIME) || !defined(BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME) || BOOST_VERSION < 104900)
 #warning Compiling without BOOST_INTERPROCESS_HAS_WINDOWS_KERNEL_BOOTTIME and BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME uncommented in boost/interprocess/detail/tmp_dir_helpers.hpp or using a boost version before 1.49 may have unintended results see svn.boost.org/trac/boost/ticket/5392
-#endif
 #endif
 
 using namespace boost;
@@ -44,7 +42,7 @@ static bool ipcScanCmd(int argc, char *argv[], bool fRelay)
     bool fSent = false;
     for (int i = 1; i < argc; i++)
     {
-        if (boost::algorithm::istarts_with(argv[i], "novacoin:"))
+        if (boost::algorithm::istarts_with(argv[i], "cryptcoin:"))
         {
             const char *strURI = argv[i];
             try {
@@ -77,7 +75,7 @@ void ipcScanRelay(int argc, char *argv[])
 static void ipcThread(void* pArg)
 {
     // Make this thread recognisable as the GUI-IPC thread
-    RenameThread("novacoin-gui-ipc");
+    RenameThread("cryptcoin-gui-ipc");
 	
     try
     {
@@ -106,7 +104,7 @@ static void ipcThread2(void* pArg)
         if (mq->timed_receive(&buffer, sizeof(buffer), nSize, nPriority, d))
         {
             uiInterface.ThreadSafeHandleURI(std::string(buffer, nSize));
-            Sleep(1000);
+            MilliSleep(1000);
         }
 
         if (fShutdown)

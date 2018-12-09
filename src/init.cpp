@@ -10,7 +10,7 @@
 #include "util.h"
 #include "ui_interface.h"
 #include "checkpoints.h"
-#include <boost/format.hpp>
+#include "zerocoin/ZeroTest.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -30,16 +30,12 @@ CWallet* pwalletMain;
 CClientUIInterface uiInterface;
 std::string strWalletFileName;
 bool fConfChange;
+bool fEnforceCanonical;
 unsigned int nNodeLifespan;
+unsigned int nDerivationMethodIndex;
 unsigned int nMinerSleep;
 bool fUseFastIndex;
-bool fUseFastStakeMiner;
-bool fUseMemoryLog;
 enum Checkpoints::CPMode CheckpointsMode;
-
-// Ping and address broadcast intervals
-extern int64_t nPingInterval;
-extern int64_t nBroadcastInterval;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -49,7 +45,7 @@ extern int64_t nBroadcastInterval;
 void ExitTimeout(void* parg)
 {
 #ifdef WIN32
-    Sleep(5000);
+    MilliSleep(5000);
     ExitProcess(0);
 #endif
 }
@@ -71,7 +67,7 @@ void Shutdown(void* parg)
     static bool fTaken;
 
     // Make this thread recognisable as the shutdown thread
-    RenameThread("novacoin-shutoff");
+    RenameThread("cryptcoin-shutoff");
 
     bool fFirstThread = false;
     {
@@ -86,7 +82,6 @@ void Shutdown(void* parg)
     if (fFirstThread)
     {
         fShutdown = true;
-        fRequestShutdown = true;
         nTransactionsUpdated++;
 //        CTxDB().Close();
         bitdb.Flush(false);
@@ -96,8 +91,8 @@ void Shutdown(void* parg)
         UnregisterWallet(pwalletMain);
         delete pwalletMain;
         NewThread(ExitTimeout, NULL);
-        Sleep(50);
-        printf("NovaCoin exited\n\n");
+        MilliSleep(50);
+        printf("cryptcoin exited\n\n");
         fExit = true;
 #ifndef QT_GUI
         // ensure non-UI client gets exited here, but let Bitcoin-Qt reach 'return 0;' in bitcoin.cpp
@@ -107,8 +102,8 @@ void Shutdown(void* parg)
     else
     {
         while (!fExit)
-            Sleep(500);
-        Sleep(100);
+            MilliSleep(500);
+        MilliSleep(100);
         ExitThread(0);
     }
 }
@@ -152,12 +147,12 @@ bool AppInit(int argc, char* argv[])
         if (mapArgs.count("-?") || mapArgs.count("--help"))
         {
             // First part of help message is specific to bitcoind / RPC client
-            std::string strUsage = _("NovaCoin version") + " " + FormatFullVersion() + "\n\n" +
+            std::string strUsage = _("cryptcoin version") + " " + FormatFullVersion() + "\n\n" +
                 _("Usage:") + "\n" +
-                  "  novacoind [options]                     " + "\n" +
-                  "  novacoind [options] <command> [params]  " + _("Send command to -server or novacoind") + "\n" +
-                  "  novacoind [options] help                " + _("List commands") + "\n" +
-                  "  novacoind [options] help <command>      " + _("Get help for a command") + "\n";
+                  "  cryptcoind [options]                     " + "\n" +
+                  "  cryptcoind [options] <command> [params]  " + _("Send command to -server or cryptcoind") + "\n" +
+                  "  cryptcoind [options] help                " + _("List commands") + "\n" +
+                  "  cryptcoind [options] help <command>      " + _("Get help for a command") + "\n";
 
             strUsage += "\n" + HelpMessage();
 
@@ -167,7 +162,7 @@ bool AppInit(int argc, char* argv[])
 
         // Command-line RPC
         for (int i = 1; i < argc; i++)
-            if (!IsSwitchChar(argv[i][0]) && !boost::algorithm::istarts_with(argv[i], "novacoin:"))
+            if (!IsSwitchChar(argv[i][0]) && !boost::algorithm::istarts_with(argv[i], "cryptcoin:"))
                 fCommandLine = true;
 
         if (fCommandLine)
@@ -207,13 +202,13 @@ int main(int argc, char* argv[])
 
 bool static InitError(const std::string &str)
 {
-    uiInterface.ThreadSafeMessageBox(str, _("NovaCoin"), CClientUIInterface::OK | CClientUIInterface::MODAL);
+    uiInterface.ThreadSafeMessageBox(str, _("cryptcoin"), CClientUIInterface::OK | CClientUIInterface::MODAL);
     return false;
 }
 
 bool static InitWarning(const std::string &str)
 {
-    uiInterface.ThreadSafeMessageBox(str, _("NovaCoin"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
+    uiInterface.ThreadSafeMessageBox(str, _("cryptcoin"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
     return true;
 }
 
@@ -235,19 +230,18 @@ std::string HelpMessage()
 {
     string strUsage = _("Options:") + "\n" +
         "  -?                     " + _("This help message") + "\n" +
-        "  -conf=<file>           " + _("Specify configuration file (default: novacoin.conf)") + "\n" +
-        "  -pid=<file>            " + _("Specify pid file (default: novacoind.pid)") + "\n" +
+        "  -conf=<file>           " + _("Specify configuration file (default: cryptcoin.conf)") + "\n" +
+        "  -pid=<file>            " + _("Specify pid file (default: cryptcoind.pid)") + "\n" +
         "  -datadir=<dir>         " + _("Specify data directory") + "\n" +
-        "  -wallet=<file>         " + _("Specify wallet file (within data directory)") + "\n" +
+        "  -wallet=<dir>          " + _("Specify wallet file (within data directory)") + "\n" +
         "  -dbcache=<n>           " + _("Set database cache size in megabytes (default: 25)") + "\n" +
         "  -dblogsize=<n>         " + _("Set database disk log size in megabytes (default: 100)") + "\n" +
         "  -timeout=<n>           " + _("Specify connection timeout in milliseconds (default: 5000)") + "\n" +
         "  -proxy=<ip:port>       " + _("Connect through socks proxy") + "\n" +
         "  -socks=<n>             " + _("Select the version of socks proxy to use (4-5, default: 5)") + "\n" +
         "  -tor=<ip:port>         " + _("Use proxy to reach tor hidden services (default: same as -proxy)") + "\n"
-        "  -torname=<host.onion>  " + _("Send the specified hidden service name when connecting to Tor nodes (default: none)") + "\n"
         "  -dns                   " + _("Allow DNS lookups for -addnode, -seednode and -connect") + "\n" +
-        "  -port=<port>           " + _("Listen for connections on <port> (default: 7777 or testnet: 17777)") + "\n" +
+        "  -port=<port>           " + _("Listen for connections on <port> (default: 27114 or testnet: 37114)") + "\n" +
         "  -maxconnections=<n>    " + _("Maintain at most <n> connections to peers (default: 125)") + "\n" +
         "  -addnode=<ip>          " + _("Add a node to connect to and attempt to keep the connection open") + "\n" +
         "  -connect=<ip>          " + _("Connect only to the specified node(s)") + "\n" +
@@ -255,10 +249,12 @@ std::string HelpMessage()
         "  -externalip=<ip>       " + _("Specify your own public address") + "\n" +
         "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (IPv4, IPv6 or Tor)") + "\n" +
         "  -discover              " + _("Discover own IP address (default: 1 when listening and no -externalip)") + "\n" +
-        "  -irc                   " + _("Find peers using internet relay chat (default: 1)") + "\n" +
+        "  -irc                   " + _("Find peers using internet relay chat (default: 0)") + "\n" +
         "  -listen                " + _("Accept connections from outside (default: 1 if no -proxy or -connect)") + "\n" +
         "  -bind=<addr>           " + _("Bind to given address. Use [host]:port notation for IPv6") + "\n" +
         "  -dnsseed               " + _("Find peers using DNS lookup (default: 1)") + "\n" +
+        "  -staking               " + _("Stake your coins to support network and gain reward (default: 1)") + "\n" +
+        "  -synctime              " + _("Sync time with other nodes. Disable if time on your system is precise e.g. syncing with NTP (default: 1)") + "\n" +
         "  -cppolicy              " + _("Sync checkpoints policy (default: strict)") + "\n" +
         "  -banscore=<n>          " + _("Threshold for disconnecting misbehaving peers (default: 100)") + "\n" +
         "  -bantime=<n>           " + _("Number of seconds to keep misbehaving peers from reconnecting (default: 86400)") + "\n" +
@@ -272,13 +268,8 @@ std::string HelpMessage()
 #endif
 #endif
         "  -detachdb              " + _("Detach block and address databases. Increases shutdown time (default: 0)") + "\n" +
-
-#ifdef DB_LOG_IN_MEMORY
-        "  -memorylog              " + _("Use in-memory logging for block index database (default: 1)") + "\n" +
-#endif
-
         "  -paytxfee=<amt>        " + _("Fee per KB to add to transactions you send") + "\n" +
-        "  -mininput=<amt>        " + str(boost::format(_("When creating transactions, ignore inputs with value less than this (default: %s)")) % FormatMoney(MIN_TXOUT_AMOUNT)) + "\n" +
+        "  -mininput=<amt>        " + _("When creating transactions, ignore inputs with value less than this (default: 0.01)") + "\n" +
 #ifdef QT_GUI
         "  -server                " + _("Accept command line and JSON-RPC commands") + "\n" +
 #endif
@@ -296,19 +287,20 @@ std::string HelpMessage()
 #endif
         "  -rpcuser=<user>        " + _("Username for JSON-RPC connections") + "\n" +
         "  -rpcpassword=<pw>      " + _("Password for JSON-RPC connections") + "\n" +
-        "  -rpcport=<port>        " + _("Listen for JSON-RPC connections on <port> (default: 8344 or testnet: 18344)") + "\n" +
+        "  -rpcport=<port>        " + _("Listen for JSON-RPC connections on <port> (default: 27115 or testnet: 37115)") + "\n" +
         "  -rpcallowip=<ip>       " + _("Allow JSON-RPC connections from specified IP address") + "\n" +
         "  -rpcconnect=<ip>       " + _("Send commands to node running on <ip> (default: 127.0.0.1)") + "\n" +
         "  -blocknotify=<cmd>     " + _("Execute command when the best block changes (%s in cmd is replaced by block hash)") + "\n" +
         "  -walletnotify=<cmd>    " + _("Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)") + "\n" +
         "  -confchange            " + _("Require a confirmations for change (default: 0)") + "\n" +
+        "  -enforcecanonical      " + _("Enforce transaction scripts to use canonical PUSH operators (default: 1)") + "\n" +
+        "  -alertnotify=<cmd>     " + _("Execute command when a relevant alert is received (%s in cmd is replaced by message)") + "\n" +
         "  -upgradewallet         " + _("Upgrade wallet to latest format") + "\n" +
         "  -keypool=<n>           " + _("Set key pool size to <n> (default: 100)") + "\n" +
         "  -rescan                " + _("Rescan the block chain for missing wallet transactions") + "\n" +
         "  -salvagewallet         " + _("Attempt to recover private keys from a corrupt wallet.dat") + "\n" +
         "  -checkblocks=<n>       " + _("How many blocks to check at startup (default: 2500, 0 = all)") + "\n" +
         "  -checklevel=<n>        " + _("How thorough the block verification is (0-6, default: 1)") + "\n" +
-        "  -par=N                 " + _("Set the number of script verification threads (1-16, 0=auto, default: 0)") + "\n" +
         "  -loadblock=<file>      " + _("Imports blocks from external blk000?.dat file") + "\n" +
 
         "\n" + _("Block creation options:") + "\n" +
@@ -374,32 +366,26 @@ bool AppInit2()
 
     // ********************************************************* Step 2: parameter interactions
 
-    nNodeLifespan = (unsigned int)(GetArg("-addrlifespan", 7));
+    nNodeLifespan = GetArg("-addrlifespan", 7);
     fUseFastIndex = GetBoolArg("-fastindex", true);
-    fUseMemoryLog = GetBoolArg("-memorylog", true);
-    nMinerSleep = (unsigned int)(GetArg("-minersleep", 500));
-
-    // Ping and address broadcast intervals
-    nPingInterval = max<int64_t>(10 * 60, GetArg("-keepalive", 30 * 60));
-
-    nBroadcastInterval = max<int64_t>(6 * 60 * 60, GetArg("-addrsetlifetime", 24 * 60 * 60));
+    nMinerSleep = GetArg("-minersleep", 500);
 
     CheckpointsMode = Checkpoints::STRICT;
     std::string strCpMode = GetArg("-cppolicy", "strict");
 
-    if(strCpMode == "strict") {
+    if(strCpMode == "strict")
         CheckpointsMode = Checkpoints::STRICT;
-    }
 
-    if(strCpMode == "advisory") {
+    if(strCpMode == "advisory")
         CheckpointsMode = Checkpoints::ADVISORY;
-    }
 
-    if(strCpMode == "permissive") {
+    if(strCpMode == "permissive")
         CheckpointsMode = Checkpoints::PERMISSIVE;
-    }
+
+    nDerivationMethodIndex = 0;
 
     fTestNet = GetBoolArg("-testnet");
+    //fTestNet = true;
     if (fTestNet) {
         SoftSetBoolArg("-irc", true);
     }
@@ -439,15 +425,6 @@ bool AppInit2()
 
     // ********************************************************* Step 3: parameter-to-internal-flags
 
-    // -par=0 means autodetect, but nScriptCheckThreads==0 means no concurrency
-    nScriptCheckThreads = (int)(GetArg("-par", 0));
-    if (nScriptCheckThreads == 0)
-        nScriptCheckThreads = boost::thread::hardware_concurrency();
-    if (nScriptCheckThreads <= 1) 
-        nScriptCheckThreads = 0;
-    else if (nScriptCheckThreads > MAX_SCRIPTCHECK_THREADS)
-        nScriptCheckThreads = MAX_SCRIPTCHECK_THREADS;
-
     fDebug = GetBoolArg("-debug");
 
     // -debug implies fDebug*
@@ -479,17 +456,10 @@ bool AppInit2()
 
     if (mapArgs.count("-timeout"))
     {
-        int nNewTimeout = (int)(GetArg("-timeout", 5000));
+        int nNewTimeout = GetArg("-timeout", 5000);
         if (nNewTimeout > 0 && nNewTimeout < 600000)
             nConnectTimeout = nNewTimeout;
     }
-
-    // Continue to put "/P2SH/" in the coinbase to monitor
-    // BIP16 support.
-    // This can be removed eventually...
-    const char* pszP2SH = "/P2SH/";
-    COINBASE_FLAGS << std::vector<unsigned char>(pszP2SH, pszP2SH+strlen(pszP2SH));
-
 
     if (mapArgs.count("-paytxfee"))
     {
@@ -500,6 +470,7 @@ bool AppInit2()
     }
 
     fConfChange = GetBoolArg("-confchange", false);
+    fEnforceCanonical = GetBoolArg("-enforcecanonical", true);
 
     if (mapArgs.count("-mininput"))
     {
@@ -510,7 +481,7 @@ bool AppInit2()
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 
     std::string strDataDir = GetDataDir().string();
-    strWalletFileName = GetArg("-wallet", "wallet.dat");
+    std::string strWalletFileName = GetArg("-wallet", "wallet.dat");
 
     // strWalletFileName must be a plain filename without a directory
     if (strWalletFileName != boost::filesystem::basename(strWalletFileName) + boost::filesystem::extension(strWalletFileName))
@@ -522,7 +493,7 @@ bool AppInit2()
     if (file) fclose(file);
     static boost::interprocess::file_lock lock(pathLockFile.string().c_str());
     if (!lock.try_lock())
-        return InitError(strprintf(_("Cannot obtain a lock on data directory %s.  NovaCoin is probably already running."), strDataDir.c_str()));
+        return InitError(strprintf(_("Cannot obtain a lock on data directory %s.  cryptcoin is probably already running."), strDataDir.c_str()));
 
 #if !defined(WIN32) && !defined(QT_GUI)
     if (fDaemon)
@@ -549,7 +520,7 @@ bool AppInit2()
     if (GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();
     printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    printf("NovaCoin version %s (%s)\n", FormatFullVersion().c_str(), CLIENT_DATE.c_str());
+    printf("cryptcoin version %s (%s)\n", FormatFullVersion().c_str(), CLIENT_DATE.c_str());
     printf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
     if (!fLogTimestamps)
         printf("Startup time: %s\n", DateTimeStrFormat("%x %H:%M:%S", GetTime()).c_str());
@@ -558,13 +529,7 @@ bool AppInit2()
     std::ostringstream strErrors;
 
     if (fDaemon)
-        fprintf(stdout, "NovaCoin server starting\n");
-
-    if (nScriptCheckThreads) {
-        printf("Using %u threads for script verification\n", nScriptCheckThreads);
-        for (int i=0; i<nScriptCheckThreads-1; i++)
-            NewThread(ThreadScriptCheck, NULL);
-    }
+        fprintf(stdout, "cryptcoin server starting\n");
 
     int64_t nStart;
 
@@ -596,7 +561,7 @@ bool AppInit2()
                                      " Original wallet.dat saved as wallet.{timestamp}.bak in %s; if"
                                      " your balance or transactions are incorrect you should"
                                      " restore from a backup."), strDataDir.c_str());
-            uiInterface.ThreadSafeMessageBox(msg, _("NovaCoin"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
+            uiInterface.ThreadSafeMessageBox(msg, _("cryptcoin"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
         }
         if (r == CDBEnv::RECOVER_FAIL)
             return InitError(_("wallet.dat corrupt, salvage failed"));
@@ -604,7 +569,7 @@ bool AppInit2()
 
     // ********************************************************* Step 6: network initialization
 
-    int nSocksVersion = (int)(GetArg("-socks", 5));
+    int nSocksVersion = GetArg("-socks", 5);
 
     if (nSocksVersion != 4 && nSocksVersion != 5)
         return InitError(strprintf(_("Unknown -socks proxy version requested: %i"), nSocksVersion));
@@ -663,21 +628,12 @@ bool AppInit2()
     }
 
     // see Step 2: parameter interactions for more information about these
-    if (!IsLimited(NET_IPV4) || !IsLimited(NET_IPV6))
-    {
-        fNoListen = !GetBoolArg("-listen", true);
-        fDiscover = GetBoolArg("-discover", true);
-        fNameLookup = GetBoolArg("-dns", true);
+    fNoListen = !GetBoolArg("-listen", true);
+    fDiscover = GetBoolArg("-discover", true);
+    fNameLookup = GetBoolArg("-dns", true);
 #ifdef USE_UPNP
-        fUseUPnP = GetBoolArg("-upnp", USE_UPNP);
+    fUseUPnP = GetBoolArg("-upnp", USE_UPNP);
 #endif
-    } else {
-        // Don't listen, discover addresses or search for nodes if IPv4 and IPv6 networking is disabled.
-        fNoListen = true;
-        fDiscover = fNameLookup = fUseUPnP = false;
-        SoftSetBoolArg("-irc", false);
-        SoftSetBoolArg("-dnsseed", false);
-    }
 
     bool fBound = false;
     if (!fNoListen)
@@ -699,25 +655,9 @@ bool AppInit2()
 #endif
             if (!IsLimited(NET_IPV4))
                 fBound |= Bind(CService(inaddr_any, GetListenPort()), !fBound);
-
         }
         if (!fBound)
             return InitError(_("Failed to listen on any port. Use -listen=0 if you want this."));
-    }
-
-    // If Tor is reachable then listen on loopback interface,
-    //    to allow allow other users reach you through the hidden service
-    if (!IsLimited(NET_TOR) && mapArgs.count("-torname")) {
-        std::string strError;
-        struct in_addr inaddr_loopback;
-        inaddr_loopback.s_addr = htonl(INADDR_LOOPBACK);
-
-#ifdef USE_IPV6
-        if (!BindListenPort(CService(in6addr_loopback, GetListenPort()), strError))
-            return InitError(strError);
-#endif
-        if (!BindListenPort(CService(inaddr_loopback, GetListenPort()), strError))
-            return InitError(strError);
     }
 
     if (mapArgs.count("-externalip"))
@@ -732,7 +672,6 @@ bool AppInit2()
 
     if (mapArgs.count("-reservebalance")) // ppcoin: reserve balance amount
     {
-        int64_t nReserveBalance = 0;
         if (!ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
         {
             InitError(_("Invalid amount for -reservebalance=<amount>"));
@@ -767,35 +706,12 @@ bool AppInit2()
         return false;
     }
 
-
+    uiInterface.InitMessage(_("Loading block index..."));
     printf("Loading block index...\n");
-    bool fLoaded = false;
-    while (!fLoaded) {
-        std::string strLoadError;
-        uiInterface.InitMessage(_("Loading block index..."));
+    nStart = GetTimeMillis();
+    if (!LoadBlockIndex())
+        return InitError(_("Error loading blkindex.dat"));
 
-        nStart = GetTimeMillis();
-        do {
-            try {
-                UnloadBlockIndex();
-
-                if (!LoadBlockIndex()) {
-                    strLoadError = _("Error loading block database");
-                    break;
-                }
-            } catch(std::exception &e) {
-                strLoadError = _("Error opening block database");
-                break;
-            }
-
-            fLoaded = true;
-        } while(false);
-
-        if (!fLoaded) {
-            // TODO: suggest reindex here
-            return InitError(strLoadError);
-        }
-    }
 
     // as LoadBlockIndex can take several minutes, it's possible the user
     // requested to kill bitcoin-qt during the last operation. If so, exit.
@@ -805,7 +721,7 @@ bool AppInit2()
         printf("Shutdown requested. Exiting.\n");
         return false;
     }
-    printf(" block index %15" PRId64 "ms\n", GetTimeMillis() - nStart);
+    printf(" block index %15"PRId64"ms\n", GetTimeMillis() - nStart);
 
     if (GetBoolArg("-printblockindex") || GetBoolArg("-printblocktree"))
     {
@@ -836,6 +752,16 @@ bool AppInit2()
         return false;
     }
 
+    // ********************************************************* Testing Zerocoin
+
+
+    if (GetBoolArg("-zerotest", false))
+    {
+        printf("\n=== ZeroCoin tests start ===\n");
+        Test_RunAllTests();
+        printf("=== ZeroCoin tests end ===\n\n");
+    }
+
     // ********************************************************* Step 8: load wallet
 
     uiInterface.InitMessage(_("Loading wallet..."));
@@ -852,13 +778,13 @@ bool AppInit2()
         {
             string msg(_("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
                          " or address book entries might be missing or incorrect."));
-            uiInterface.ThreadSafeMessageBox(msg, _("NovaCoin"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
+            uiInterface.ThreadSafeMessageBox(msg, _("cryptcoin"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
         }
         else if (nLoadWalletRet == DB_TOO_NEW)
-            strErrors << _("Error loading wallet.dat: Wallet requires newer version of NovaCoin") << "\n";
+            strErrors << _("Error loading wallet.dat: Wallet requires newer version of cryptcoin") << "\n";
         else if (nLoadWalletRet == DB_NEED_REWRITE)
         {
-            strErrors << _("Wallet needed to be rewritten: restart NovaCoin to complete") << "\n";
+            strErrors << _("Wallet needed to be rewritten: restart cryptcoin to complete") << "\n";
             printf("%s", strErrors.str().c_str());
             return InitError(strErrors.str());
         }
@@ -868,7 +794,7 @@ bool AppInit2()
 
     if (GetBoolArg("-upgradewallet", fFirstRun))
     {
-        int nMaxVersion = (int)(GetArg("-upgradewallet", 0));
+        int nMaxVersion = GetArg("-upgradewallet", 0);
         if (nMaxVersion == 0) // the -upgradewallet without argument case
         {
             printf("Performing wallet upgrade to %i\n", FEATURE_LATEST);
@@ -896,7 +822,7 @@ bool AppInit2()
     }
 
     printf("%s", strErrors.str().c_str());
-    printf(" wallet      %15" PRId64 "ms\n", GetTimeMillis() - nStart);
+    printf(" wallet      %15"PRId64"ms\n", GetTimeMillis() - nStart);
 
     RegisterWallet(pwalletMain);
 
@@ -916,7 +842,7 @@ bool AppInit2()
         printf("Rescanning last %i blocks (from block %i)...\n", pindexBest->nHeight - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
         pwalletMain->ScanForWalletTransactions(pindexRescan, true);
-        printf(" rescan      %15" PRId64 "ms\n", GetTimeMillis() - nStart);
+        printf(" rescan      %15"PRId64"ms\n", GetTimeMillis() - nStart);
     }
 
     // ********************************************************* Step 9: import blocks
@@ -931,7 +857,7 @@ bool AppInit2()
             if (file)
                 LoadExternalBlockFile(file);
         }
-        StartShutdown();
+        exit(0);
     }
 
     filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
@@ -958,7 +884,7 @@ bool AppInit2()
             printf("Invalid or missing peers.dat; recreating\n");
     }
 
-    printf("Loaded %i addresses from peers.dat  %" PRId64 "ms\n",
+    printf("Loaded %i addresses from peers.dat  %"PRId64"ms\n",
            addrman.size(), GetTimeMillis() - nStart);
 
     // ********************************************************* Step 11: start node
@@ -969,11 +895,11 @@ bool AppInit2()
     RandAddSeedPerfmon();
 
     //// debug print
-    printf("mapBlockIndex.size() = %" PRIszu "\n",   mapBlockIndex.size());
+    printf("mapBlockIndex.size() = %"PRIszu"\n",   mapBlockIndex.size());
     printf("nBestHeight = %d\n",            nBestHeight);
-    printf("setKeyPool.size() = %" PRIszu "\n",      pwalletMain->setKeyPool.size());
-    printf("mapWallet.size() = %" PRIszu "\n",       pwalletMain->mapWallet.size());
-    printf("mapAddressBook.size() = %" PRIszu "\n",  pwalletMain->mapAddressBook.size());
+    printf("setKeyPool.size() = %"PRIszu"\n",      pwalletMain->setKeyPool.size());
+    printf("mapWallet.size() = %"PRIszu"\n",       pwalletMain->mapWallet.size());
+    printf("mapAddressBook.size() = %"PRIszu"\n",  pwalletMain->mapAddressBook.size());
 
     if (!NewThread(StartNode, NULL))
         InitError(_("Error: could not start node"));
@@ -996,7 +922,7 @@ bool AppInit2()
     // Loop until process is exit()ed from shutdown() function,
     // called from ThreadRPCServer thread when a "stop" command is received.
     while (1)
-        Sleep(5000);
+        MilliSleep(5000);
 #endif
 
     return true;

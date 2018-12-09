@@ -24,12 +24,11 @@ namespace boost {
 #include <boost/program_options/parsers.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
+#include <stdarg.h>
 
 #ifdef WIN32
 #ifdef _MSC_VER
@@ -56,13 +55,12 @@ namespace boost {
 # include <sys/prctl.h>
 #endif
 
-#if !defined(WIN32) && !defined(ANDROID)
+#ifndef WIN32
 #include <execinfo.h>
 #endif
 
 
 using namespace std;
-namespace bt = boost::posix_time;
 
 map<string, string> mapArgs;
 map<string, vector<string> > mapMultiArgs;
@@ -81,25 +79,6 @@ bool fNoListen = false;
 bool fLogTimestamps = false;
 CMedianFilter<int64_t> vTimeOffsets(200,0);
 bool fReopenDebugLog = false;
-
-// Extended DecodeDumpTime implementation, see this page for details:
-// http://stackoverflow.com/questions/3786201/parsing-of-date-time-from-string-boost
-const std::locale formats[] = {
-    std::locale(std::locale::classic(),new bt::time_input_facet("%Y-%m-%dT%H:%M:%SZ")),
-    std::locale(std::locale::classic(),new bt::time_input_facet("%Y-%m-%d %H:%M:%S")),
-    std::locale(std::locale::classic(),new bt::time_input_facet("%Y/%m/%d %H:%M:%S")),
-    std::locale(std::locale::classic(),new bt::time_input_facet("%d.%m.%Y %H:%M:%S")),
-    std::locale(std::locale::classic(),new bt::time_input_facet("%Y-%m-%d"))
-};
-
-const size_t formats_n = sizeof(formats)/sizeof(formats[0]);
-
-std::time_t pt_to_time_t(const bt::ptime& pt)
-{
-    bt::ptime timet_start(boost::gregorian::date(1970,1,1));
-    bt::time_duration diff = pt - timet_start;
-    return diff.ticks()/bt::time_duration::rep_type::ticks_per_second;
-}
 
 // Init OpenSSL library multithreading support
 static CCriticalSection** ppmutexOpenSSL;
@@ -313,12 +292,8 @@ string vstrprintf(const char *format, va_list ap)
     int ret;
     while (true)
     {
-#ifndef _MSC_VER
         va_list arg_ptr;
         va_copy(arg_ptr, ap);
-#else
-        va_list arg_ptr = ap;
-#endif
 #ifdef WIN32
         ret = _vsnprintf(p, limit, format, arg_ptr);
 #else
@@ -396,7 +371,7 @@ string FormatMoney(int64_t n, bool fPlus)
     int64_t n_abs = (n > 0 ? n : -n);
     int64_t quotient = n_abs/COIN;
     int64_t remainder = n_abs%COIN;
-    string str = strprintf("%" PRId64 ".%06" PRId64, quotient, remainder);
+    string str = strprintf("%"PRId64".%08"PRId64, quotient, remainder);
 
     // Right-trim excess zeros before the decimal point:
     int nTrim = 0;
@@ -600,11 +575,9 @@ bool GetBoolArg(const std::string& strArg, bool fDefault)
 
 bool SoftSetArg(const std::string& strArg, const std::string& strValue)
 {
-    if (mapArgs.count(strArg) || mapMultiArgs.count(strArg))
+    if (mapArgs.count(strArg))
         return false;
     mapArgs[strArg] = strValue;
-    mapMultiArgs[strArg].push_back(strValue);
-
     return true;
 }
 
@@ -945,51 +918,6 @@ string DecodeBase32(const string& str)
 }
 
 
-int64_t DecodeDumpTime(const std::string& s)
-{
-    bt::ptime pt;
-
-    for(size_t i=0; i<formats_n; ++i)
-    {
-        std::istringstream is(s);
-        is.imbue(formats[i]);
-        is >> pt;
-        if(pt != bt::ptime()) break;
-    }
-
-    return pt_to_time_t(pt);
-}
-
-std::string EncodeDumpTime(int64_t nTime) {
-    return DateTimeStrFormat("%Y-%m-%dT%H:%M:%SZ", nTime);
-}
-
-std::string EncodeDumpString(const std::string &str) {
-    std::stringstream ret;
-    BOOST_FOREACH(unsigned char c, str) {
-        if (c <= 32 || c >= 128 || c == '%') {
-            ret << '%' << HexStr(&c, &c + 1);
-        } else {
-            ret << c;
-        }
-    }
-    return ret.str();
-}
-
-std::string DecodeDumpString(const std::string &str) {
-    std::stringstream ret;
-    for (unsigned int pos = 0; pos < str.length(); pos++) {
-        unsigned char c = str[pos];
-        if (c == '%' && pos+2 < str.length()) {
-            c = (((str[pos+1]>>6)*9+((str[pos+1]-'0')&15)) << 4) | 
-                ((str[pos+2]>>6)*9+((str[pos+2]-'0')&15));
-            pos += 2;
-        }
-        ret << c;
-    }
-    return ret.str();
-}
-
 bool WildcardMatch(const char* psz, const char* mask)
 {
     while (true)
@@ -1032,7 +960,7 @@ static std::string FormatException(std::exception* pex, const char* pszThread)
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "novacoin";
+    const char* pszModule = "cryptcoin";
 #endif
     if (pex)
         return strprintf(
@@ -1061,7 +989,7 @@ void LogStackTrace() {
     printf("\n\n******* exception encountered *******\n");
     if (fileout)
     {
-#if !defined(WIN32) && !defined(ANDROID)
+#ifndef WIN32
         void* pszBuffer[32];
         size_t size;
         size = backtrace(pszBuffer, 32);
@@ -1081,13 +1009,13 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\NovaCoin
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\NovaCoin
-    // Mac: ~/Library/Application Support/NovaCoin
-    // Unix: ~/.novacoin
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\cryptcoin
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\cryptcoin
+    // Mac: ~/Library/Application Support/cryptcoin
+    // Unix: ~/.cryptcoin
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "NovaCoin";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "cryptcoin";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -1099,10 +1027,10 @@ boost::filesystem::path GetDefaultDataDir()
     // Mac
     pathRet /= "Library/Application Support";
     fs::create_directory(pathRet);
-    return pathRet / "NovaCoin";
+    return pathRet / "cryptcoin";
 #else
     // Unix
-    return pathRet / ".novacoin";
+    return pathRet / ".cryptcoin";
 #endif
 #endif
 }
@@ -1133,8 +1061,8 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
     } else {
         path = GetDefaultDataDir();
     }
-    if (fNetSpecific && GetBoolArg("-testnet", false))
-        path /= "testnet2";
+    if (fNetSpecific && fTestNet)
+        path /= "testnet";
 
     fs::create_directory(path);
 
@@ -1142,36 +1070,9 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
     return path;
 }
 
-string randomStrGen(int length) {
-    static string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-    string result;
-    result.resize(length);
-    for (int32_t i = 0; i < length; i++)
-        result[i] = charset[rand() % charset.length()];
-
-    return result;
-}
-
-void createConf()
-{
-    srand(time(NULL));
-
-    ofstream pConf;
-    pConf.open(GetConfigFile().generic_string().c_str());
-    pConf << "rpcuser=user\nrpcpassword="
-            + randomStrGen(15)
-            + "\nrpcport=8344"
-            + "\nport=7777"
-            + "\ndaemon=0 #(0=off, 1=on) Run in the background as a daemon and accept commands"
-            + "\nserver=0 #(0=off, 1=on) Accept command line and JSON-RPC commands"
-            + "\nrpcallowip=127.0.0.1"
-            + "\ntestnet=0";
-    pConf.close();
-}
-
 boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "novacoin.conf"));
+    boost::filesystem::path pathConfigFile(GetArg("-conf", "cryptcoin.conf"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }
@@ -1181,12 +1082,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
-    {
-        createConf();
-        new(&streamConfig) boost::filesystem::ifstream(GetConfigFile());
-        if(!streamConfig.good())
-            return;
-    }
+        return; // No bitcoin.conf file is OK
 
     set<string> setOptions;
     setOptions.insert("*");
@@ -1207,7 +1103,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 
 boost::filesystem::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "novacoind.pid"));
+    boost::filesystem::path pathPidFile(GetArg("-pid", "cryptcoind.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
@@ -1245,22 +1141,12 @@ void FileCommit(FILE *fileout)
 #endif
 }
 
-int GetFilesize(FILE* file)
-{
-    int nSavePos = ftell(file);
-    int nFilesize = -1;
-    if (fseek(file, 0, SEEK_END) == 0)
-        nFilesize = ftell(file);
-    fseek(file, nSavePos, SEEK_SET);
-    return nFilesize;
-}
-
 void ShrinkDebugFile()
 {
     // Scroll debug.log if it's getting too big
     boost::filesystem::path pathLog = GetDataDir() / "debug.log";
     FILE* file = fopen(pathLog.string().c_str(), "r");
-    if (file && GetFilesize(file) > 10 * 1000000)
+    if (file && boost::filesystem::file_size(pathLog) > 10 * 1000000)
     {
         // Restart the file with some of the end
         char pch[200000];
@@ -1276,13 +1162,6 @@ void ShrinkDebugFile()
         }
     }
 }
-
-
-
-
-
-
-
 
 //
 // "Never go to sea with two chronometers; take one or three."
@@ -1328,7 +1207,7 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
 
     // Add data
     vTimeOffsets.input(nOffsetSample);
-    printf("Added time data, samples %d, offset %+" PRId64 " (%+" PRId64 " minutes)\n", vTimeOffsets.size(), nOffsetSample, nOffsetSample/60);
+    printf("Added time data, samples %d, offset %+"PRId64" (%+"PRId64" minutes)\n", vTimeOffsets.size(), nOffsetSample, nOffsetSample/60);
     if (vTimeOffsets.size() >= 5 && vTimeOffsets.size() % 2 == 1)
     {
         int64_t nMedian = vTimeOffsets.median();
@@ -1354,19 +1233,19 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
                 if (!fMatch)
                 {
                     fDone = true;
-                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong NovaCoin will not work properly.");
+                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong cryptcoin will not work properly.");
                     strMiscWarning = strMessage;
                     printf("*** %s\n", strMessage.c_str());
-                    uiInterface.ThreadSafeMessageBox(strMessage+" ", string("NovaCoin"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION);
+                    uiInterface.ThreadSafeMessageBox(strMessage+" ", string("cryptcoin"), CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION);
                 }
             }
         }
         if (fDebug) {
             BOOST_FOREACH(int64_t n, vSorted)
-                printf("%+" PRId64 "  ", n);
+                printf("%+"PRId64"  ", n);
             printf("|  ");
         }
-        printf("nTimeOffset = %+" PRId64 "  (%+" PRId64 " minutes)\n", nTimeOffset, nTimeOffset/60);
+        printf("nTimeOffset = %+"PRId64"  (%+"PRId64" minutes)\n", nTimeOffset, nTimeOffset/60);
     }
 }
 

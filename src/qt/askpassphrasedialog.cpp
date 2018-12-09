@@ -2,17 +2,16 @@
 #include "ui_askpassphrasedialog.h"
 
 #include "guiconstants.h"
-#include "dialogwindowflags.h"
 #include "walletmodel.h"
 
 #include <QMessageBox>
 #include <QPushButton>
 #include <QKeyEvent>
 
-extern bool fWalletUnlockMintOnly;
+extern bool fWalletUnlockStakingOnly;
 
 AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
-    QDialog(parent, DIALOGWINDOWHINTS),
+    QDialog(parent),
     ui(new Ui::AskPassphraseDialog),
     mode(mode),
     model(0),
@@ -22,7 +21,7 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     ui->passEdit1->setMaxLength(MAX_PASSPHRASE_SIZE);
     ui->passEdit2->setMaxLength(MAX_PASSPHRASE_SIZE);
     ui->passEdit3->setMaxLength(MAX_PASSPHRASE_SIZE);
-
+    
     // Setup Caps Lock detection.
     ui->passEdit1->installEventFilter(this);
     ui->passEdit2->installEventFilter(this);
@@ -36,8 +35,11 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
             ui->warningLabel->setText(tr("Enter the new passphrase to the wallet.<br/>Please use a passphrase of <b>10 or more random characters</b>, or <b>eight or more words</b>."));
             setWindowTitle(tr("Encrypt wallet"));
             break;
+        case UnlockStaking:
+            ui->stakingCheckBox->setChecked(true);
+            ui->stakingCheckBox->show();
+            // fallthru
         case Unlock: // Ask passphrase
-        case UnlockMining:
             ui->warningLabel->setText(tr("This operation needs your wallet passphrase to unlock the wallet."));
             ui->passLabel2->hide();
             ui->passEdit2->hide();
@@ -113,7 +115,7 @@ void AskPassphraseDialog::accept()
                 {
                     QMessageBox::warning(this, tr("Wallet encrypted"),
                                          "<qt>" + 
-                                         tr("NovaCoin will close now to finish the encryption process. "
+                                         tr("cryptcoin will close now to finish the encryption process. "
                                          "Remember that encrypting your wallet cannot fully protect "
                                          "your coins from being stolen by malware infecting your computer.") + 
                                          "<br><br><b>" + 
@@ -142,6 +144,7 @@ void AskPassphraseDialog::accept()
             QDialog::reject(); // Cancelled
         }
         } break;
+    case UnlockStaking:
     case Unlock:
         if(!model->setWalletLocked(false, oldpass))
         {
@@ -150,19 +153,8 @@ void AskPassphraseDialog::accept()
         }
         else
         {
+            fWalletUnlockStakingOnly = ui->stakingCheckBox->isChecked();
             QDialog::accept(); // Success
-        }
-        break;
-    case UnlockMining:
-        if(!model->setWalletLocked(false, oldpass))
-        {
-            QMessageBox::critical(this, tr("Wallet unlock failed"),
-                                  tr("The passphrase entered for the wallet decryption was incorrect."));
-        }
-        else
-        {
-            QDialog::accept(); // Success
-            fWalletUnlockMintOnly = true;
         }
         break;
     case Decrypt:
@@ -173,11 +165,7 @@ void AskPassphraseDialog::accept()
         }
         else
         {
-            QMessageBox::warning(this, tr("Wallet decrypted"),
-                                     "<qt>" + 
-                                     tr("NovaCoin will close now to finish the decryption process. ") +
-                                     "</b></qt>");
-            QApplication::quit();
+            QDialog::accept(); // Success
         }
         break;
     case ChangePass:
@@ -213,8 +201,8 @@ void AskPassphraseDialog::textChanged()
     case Encrypt: // New passphrase x2
         acceptable = !ui->passEdit2->text().isEmpty() && !ui->passEdit3->text().isEmpty();
         break;
+    case UnlockStaking:
     case Unlock: // Old passphrase x1
-    case UnlockMining:
     case Decrypt:
         acceptable = !ui->passEdit1->text().isEmpty();
         break;

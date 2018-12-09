@@ -25,15 +25,10 @@ public:
         ProxyIP,           // QString
         ProxyPort,         // int
         ProxySocksVersion, // int
-        TorUse,            // bool
-        TorIP,             // QString
-        TorPort,           // int
-        TorOnly,           // bool
-        TorName,           // QString
         Fee,               // qint64
+        ReserveBalance,    // qint64
         DisplayUnit,       // BitcoinUnits::Unit
         DisplayAddresses,  // bool
-        ThirdPartyTxUrls,  // QString
         DetachDatabases,   // bool
         Language,          // QString
         CoinControlFeatures, // bool
@@ -51,12 +46,12 @@ public:
 
     /* Explicit getters */
     qint64 getTransactionFee();
+    qint64 getReserveBalance();
     bool getMinimizeToTray();
     bool getMinimizeOnClose();
     int getDisplayUnit();
     bool getDisplayAddresses();
     bool getCoinControlFeatures();
-    QString getThirdPartyTxUrls() { return strThirdPartyTxUrls; }
     QString getLanguage() { return language; }
 
 private:
@@ -66,11 +61,11 @@ private:
     bool fMinimizeOnClose;
     bool fCoinControlFeatures;
     QString language;
-    QString strThirdPartyTxUrls;
 
 signals:
     void displayUnitChanged(int unit);
     void transactionFeeChanged(qint64);
+    void reserveBalanceChanged(qint64);
     void coinControlFeaturesChanged(bool);
 };
 
