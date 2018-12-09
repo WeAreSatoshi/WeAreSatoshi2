@@ -7,7 +7,7 @@ DEFINES += STATIC
 DEFINES += QT_STATIC_BUILD
 CONFIG += no_include_pwd
 CONFIG += thread
-CONFIG += static
+#CONFIG += static
 QMAKE_CXXFLAGS = -fpermissive -std=c++11
 
 greaterThan(QT_MAJOR_VERSION, 4) {
@@ -18,6 +18,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 unix:QMAKE_RPATHDIR += /usr/lib/
 unix:QMAKE_RPATHDIR += /usr/local/lib/
+BDB_LIB_SUFFIX=-4.8
 
 # for boost 1.37, add -mt to the boost libraries
 # use: qmake BOOST_LIB_SUFFIX=-mt

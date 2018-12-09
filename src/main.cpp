@@ -2170,10 +2170,6 @@ bool CBlock::AcceptBlock()
     CScript DEV_SCRIPT;
     DEV_SCRIPT.SetDestination(CBitcoinAddress("wYnz37igBdd2aseyh1GTKKkawYE79JD8qF").Get());
 
-    bool found_1 = false;
-
-    CTransaction temp = vtx[1];
-
     // Check premine allocation
     if (nHeight == WSX_2_FORK) {
         bool foundPremine = false;
@@ -2186,7 +2182,11 @@ bool CBlock::AcceptBlock()
 
         if (!foundPremine)
             return DoS(100, error("AcceptBlock() : missing premine script"));
-    }
+     }
+
+    // reject all proof of work blocks
+    if (nHeight >= WSX_2_FORK && !IsProofOfStake())
+        return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     // reject all proof of work blocks
     if (nHeight >= WSX_2_FORK && !IsProofOfStake())
@@ -2918,10 +2918,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if (nBestHeight >= nHardfork1Block && pfrom->nVersion < 20002)
         	badVersion = true;
         if (pfrom->nVersion < MIN_PROTO_VERSION)
-        	badVersion = true;
+            badVersion = true;
 
-
-        if (nBestHeight + 1 >= WSX_2_FORK && pfrom ->nVersion < PROTOCOL_VERSION_FORK)
+        if (nBestHeight >= WSX_2_FORK && pfrom->nVersion < MIN_PROTO_VERSION_FORKV2)
             badVersion = true;
 
         if (badVersion)
