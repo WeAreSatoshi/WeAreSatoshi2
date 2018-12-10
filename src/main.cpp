@@ -88,7 +88,7 @@ int StakeMinAge(int nHeight)
     if (fTestNet)
         return 20 * 60; // test net min age is 20 min
 
-    if (nHeight >= WSX_2_FORK)
+    if (nHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET))
         return 60 * 60; // 1 hour
 
     return 60 * 60 * 24 * 5; // 5 days
@@ -96,7 +96,7 @@ int StakeMinAge(int nHeight)
 
 int StakeMaxAge(int nHeight)
 {
-    if (nHeight >= WSX_2_FORK)
+    if (nHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET))
         return 60 * 60 * 24 * 7; // 7 days
 
     return 60 * 60 * 24 * 30;  // 30 days
@@ -1022,7 +1022,7 @@ int64_t GetProofOfStakeRewardPercent(int nHeight)
 {
     int64_t nRewardCoinYear = COIN_REWARD_STAGE_3;
 
-    if (nHeight >= WSX_2_FORK)
+    if (nHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET))
         nRewardCoinYear = COIN_REWARD_STAGE_4;
     if (nHeight <= REWARD_LIMIT_STAGE_1)
         nRewardCoinYear = COIN_REWARD_STAGE_1;
@@ -1533,7 +1533,7 @@ bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
 bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 {
     //accept only proof of stake blocks
-    if (pindex->nHeight >= WSX_2_FORK && !pindex->IsProofOfStake())
+    if (pindex->nHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET) && !pindex->IsProofOfStake())
         return false;
 
     // Check it again in case a previous version let a bad block in, but skip BlockSig checking
@@ -1639,7 +1639,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         // if (pindex->nHeight > WSX_2_FORK)
         //     nCalculatedStakeReward -= nCalculatedStakeReward * WSX_DEV_PERCENT;
 
-        if (pindex->nHeight != WSX_2_FORK && nStakeReward > nCalculatedStakeReward)
+        if (pindex->nHeight != (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET) && nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%" PRId64 " vs calculated=%" PRId64 ")", nStakeReward, nCalculatedStakeReward));
     }
 
@@ -2168,10 +2168,10 @@ bool CBlock::AcceptBlock()
 */
 
     CScript DEV_SCRIPT;
-    DEV_SCRIPT.SetDestination(CBitcoinAddress("wYnz37igBdd2aseyh1GTKKkawYE79JD8qF").Get());
+    DEV_SCRIPT.SetDestination(CBitcoinAddress((!fTestNet ? "wYnz37igBdd2aseyh1GTKKkawYE79JD8qF" : "TQ3UZuQBBdjnu7cH46hdrj54Xq6xU7KLRR")).Get());
 
     // Check premine allocation
-    if (nHeight == WSX_2_FORK) {
+    if (nHeight == (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET)) {
         bool foundPremine = false;
         for (const CTxOut &output:  vtx[1].vout) {
             if (output.scriptPubKey == DEV_SCRIPT && output.nValue == 2000000 * COIN) {
@@ -2185,11 +2185,11 @@ bool CBlock::AcceptBlock()
      }
 
     // reject all proof of work blocks
-    if (nHeight >= WSX_2_FORK && !IsProofOfStake())
+    if (nHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET) && !IsProofOfStake())
         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     // reject all proof of work blocks
-    if (nHeight >= WSX_2_FORK && !IsProofOfStake())
+    if (nHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET) && !IsProofOfStake())
         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     // Check proof-of-work or proof-of-stake
@@ -2287,7 +2287,7 @@ bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, uns
 bool ProcessBlock(CNode* pfrom, CBlock* pblock)
 {
     // reject non proof of stake blocks after fork height
-    if (nBestHeight >= WSX_2_FORK && !pblock->IsProofOfStake())
+    if (nBestHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET) && !pblock->IsProofOfStake())
         return error("ProcessBlock() : block is not proof-of-stake %d", nBestHeight);
 
     // Check for duplicate
@@ -2591,9 +2591,9 @@ bool LoadBlockIndex(bool fAllowNew)
         block.nNonce   = 681120;
 		if(fTestNet)
         {
-            block.nNonce   = 0;
+            block.nNonce   = 25943;
         }
-        if (true  && (block.GetHash() != hashGenesisBlock)) {
+        if (block.GetHash() != (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet)) {
 
         // This will figure out a valid hash and Nonce if you're
         // creating a different genesis block:
@@ -2615,7 +2615,7 @@ bool LoadBlockIndex(bool fAllowNew)
         printf("block.nNonce = %u \n", block.nNonce);
 
         //// debug print
-        assert(block.hashMerkleRoot == uint256("0x9ce8d9c9af870cbed581d216ec0b1564092de98d213ce38e32d867d833729cbf"));
+        assert(block.hashMerkleRoot == (!fTestNet ? uint256("0x9ce8d9c9af870cbed581d216ec0b1564092de98d213ce38e32d867d833729cbf") : uint256("0x9ce8d9c9af870cbed581d216ec0b1564092de98d213ce38e32d867d833729cbf")));
         block.print();
         assert(block.GetHash() == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet));
         assert(block.CheckBlock());
@@ -2920,7 +2920,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if (pfrom->nVersion < MIN_PROTO_VERSION)
             badVersion = true;
 
-        if (nBestHeight >= WSX_2_FORK && pfrom->nVersion < MIN_PROTO_VERSION_FORKV2)
+        if (nBestHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET) && pfrom->nVersion < MIN_PROTO_VERSION_FORKV2)
             badVersion = true;
 
         if (badVersion)

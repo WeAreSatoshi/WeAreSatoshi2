@@ -27,7 +27,10 @@ class CInv;
 class CRequestTracker;
 class CNode;
 
+
 static const int WSX_2_FORK = 802050;
+static const int WSX_2_FORK_TESTNET = 200;
+
 static const float_t WSX_DEV_PERCENT = 0.1; //10% of the inflation
 
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
@@ -59,7 +62,7 @@ static const int fHaveUPnP = false;
 #endif
 
 static const uint256 hashGenesisBlock("0x00000ca48fec17e8c404f5990b6d2b95066fe371fe472ab111300453ff631db4");
-static const uint256 hashGenesisBlockTestNet("0x");
+static const uint256 hashGenesisBlockTestNet("0x0000912f7405de4fdd3bef04545483ddfe74c27ec50e036f15f9b80a51152d07");
 inline int64_t PastDrift(int64_t nTime)   { return nTime - 20 * 60; } // up to 20 minutes from the past
 inline int64_t FutureDrift(int64_t nTime) { return nTime + 20 * 60; } // up to 20 minutes from the future
 
