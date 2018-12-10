@@ -1,0 +1,13 @@
+MSVC/include
+src
+src/json
+src/leveldb/db
+src/leveldb/helpers/memenv
+src/leveldb/include/leveldb
+src/leveldb/port
+src/leveldb/port/win
+src/leveldb/table
+src/leveldb/util
+src/qt
+src/qt/test
+src/zerocoin

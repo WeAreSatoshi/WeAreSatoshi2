@@ -627,6 +627,7 @@ bool CTxMemPool::accept(CTxDB& txdb, CTransaction &tx, bool fCheckInputs,
             }
             break;
         }
+
     }
 
     if (fCheckInputs)
@@ -1376,6 +1377,26 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
             CTxIndex& txindex = inputs[prevout.hash].first;
             CTransaction& txPrev = inputs[prevout.hash].second;
 
+            // Start checking coinburn after this height
+            if(nBestHeight > 853500){
+                // Read block header
+                CBlock block;
+                if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
+                    return 0;
+                // Find the block in the index
+                map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(block.GetHash());
+                if (mi == mapBlockIndex.end())
+                    return DoS(100, error("ConnectInputs() : Cannot find block in index"));
+                CBlockIndex* pindex = (*mi).second;
+                if (!pindex || !pindex->IsInMainChain())
+                    return DoS(100, error("ConnectInputs() : Cannot find block in index"));
+
+                // Check for coin burn
+                if(WSX_2_COINBURN_HEIGHT > pindex->nHeight){
+                    return DoS(100, error("ConnectInputs() : Coins have been burned, vin height %d", pindex->nHeight));
+                }
+
+            }
             if (prevout.n >= txPrev.vout.size() || prevout.n >= txindex.vSpent.size())
                 return DoS(100, error("ConnectInputs() : %s prevout.n out of range %d %" PRIszu " %" PRIszu " prev tx %s\n%s", GetHash().ToString().substr(0,10).c_str(), prevout.n, txPrev.vout.size(), txindex.vSpent.size(), prevout.hash.ToString().substr(0,10).c_str(), txPrev.ToString().c_str()));
 
