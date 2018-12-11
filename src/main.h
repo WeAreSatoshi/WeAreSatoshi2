@@ -29,7 +29,7 @@ class CNode;
 
 
 static const int WSX_2_FORK = 802050;
-static const int WSX_2_FORK_TESTNET = 200;
+static const int WSX_2_FORK_TESTNET = 220;
 
 static const int WSX_2_COINBURN_HEIGHT = 688888;
 static const int WSX_2_COINBURN_HEIGHT_TESTNET = 688;
