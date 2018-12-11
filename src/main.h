@@ -32,7 +32,7 @@ static const int WSX_2_FORK = 802050;
 static const int WSX_2_FORK_TESTNET = 200;
 
 static const int WSX_2_COINBURN_HEIGHT = 668888;
-static const int WSX_2_START_COINBURN = 853500;
+static const int WSX_2_START_COINBURN = 856000;
 
 
 static const float_t WSX_DEV_PERCENT = 0.1; //10% of the inflation
