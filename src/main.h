@@ -34,7 +34,7 @@ static const int WSX_2_FORK_TESTNET = 220;
 static const int WSX_2_COINBURN_HEIGHT = 688888;
 static const int WSX_2_COINBURN_HEIGHT_TESTNET = 688;
 
-static const int WSX_2_COINBURN_ACTIVATE = 888888;
+static const int WSX_2_COINBURN_ACTIVATE = 856000;
 static const int WSX_2_COINBURN_ACTIVATE_TESTNET = 888;
 
 

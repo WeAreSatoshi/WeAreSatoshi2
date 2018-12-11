@@ -1392,7 +1392,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
                     return DoS(100, error("ConnectInputs() : Cannot find block in index"));
 
                 // Check for coin burn
-                if((!fTestNet ? WSX_2_COINBURN_ACTIVATE : WSX_2_COINBURN_ACTIVATE_TESTNET) > pindex->nHeight){
+                if((!fTestNet ? WSX_2_COINBURN_HEIGHT : WSX_2_COINBURN_HEIGHT_TESTNET) > pindex->nHeight){
                     return DoS(100, error("ConnectInputs() : Coins have been burned, vin height %d", pindex->nHeight));
                 }
 
@@ -1667,6 +1667,43 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     // ppcoin: track money supply and mint amount info
     pindex->nMint = nValueOut - nValueIn + nFees;
     pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + nValueOut - nValueIn;
+
+    // modify money supply to reflect coinburn amount
+    // mem intensive, doesnt matter since it runs one time
+    if(pindex->nHeight == WSX_2_START_COINBURN){
+        int64_t burnedCoins = 0;
+        for (CBlockIndex* pIndex = pindex; pIndex && pIndex->pprev; pIndex = pIndex->pprev)
+        {
+            CBlock block;
+            if (!block.ReadFromDisk(pIndex))
+                return error("ConnectBlock() : block.ReadFromDisk failed");
+
+            BOOST_FOREACH(const CTransaction &tx, block.vtx)
+            {
+                CTxDB txdb("r");
+                CTxIndex txindex;
+
+                // check whether all prevouts unspent and if older than burn block, remove from supply
+                if (txdb.ReadTxIndex(tx.GetHash(), txindex))
+                {
+                    // sanity check
+                    if(txindex.vSpent.size() != tx.vout.size()){
+                        return error("ConnectBlock() : vSpent != vout");
+                    }
+                    // outpoint is a UTXO and older than WSX_2_COINBURN_HEIGHT
+                    for(int voutIndex = 0; voutIndex < txindex.vSpent.size(); voutIndex++){
+                        if(txindex.vSpent[voutIndex].IsNull() && pIndex->nHeight <= WSX_2_COINBURN_HEIGHT){
+                            burnedCoins += tx.vout[voutIndex].nValue;
+                        }
+                    }
+                }
+
+            }
+        }
+        // remove coins from money supply
+        pindex->nMoneySupply -= burnedCoins;
+    }
+
     if (!txdb.WriteBlockIndex(CDiskBlockIndex(pindex)))
         return error("Connect() : WriteBlockIndex for pindex failed");
 
@@ -2942,6 +2979,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             badVersion = true;
 
         if (nBestHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET) && pfrom->nVersion < MIN_PROTO_VERSION_FORKV2)
+            badVersion = true;
+
+        if (nBestHeight >= (!fTestNet ? WSX_2_START_COINBURN : WSX_2_FORK_TESTNET) && pfrom->nVersion < MIN_PROTO_VERSION_FORK_COINBURN)
             badVersion = true;
 
         if (badVersion)
