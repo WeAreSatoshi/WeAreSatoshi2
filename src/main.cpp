@@ -1667,6 +1667,43 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     // ppcoin: track money supply and mint amount info
     pindex->nMint = nValueOut - nValueIn + nFees;
     pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + nValueOut - nValueIn;
+
+    // modify money supply to reflect coinburn amount
+    // mem intensive, doesnt matter since it runs one time
+    if(pindex->nHeight == WSX_2_START_COINBURN){
+        int64_t burnedCoins = 0;
+        for (CBlockIndex* pIndex = pindex; pIndex && pIndex->pprev; pIndex = pIndex->pprev)
+        {
+            CBlock block;
+            if (!block.ReadFromDisk(pIndex))
+                return error("ConnectBlock() : block.ReadFromDisk failed");
+
+            BOOST_FOREACH(const CTransaction &tx, block.vtx)
+            {
+                CTxDB txdb("r");
+                CTxIndex txindex;
+
+                // check whether all prevouts unspent and if older than burn block, remove from supply
+                if (txdb.ReadTxIndex(tx.GetHash(), txindex))
+                {
+                    // sanity check
+                    if(txindex.vSpent.size() != tx.vout.size()){
+                        return error("ConnectBlock() : vSpent != vout");
+                    }
+                    // outpoint is a UTXO
+                    for(int voutIndex = 0; voutIndex < txindex.vSpent.size(); voutIndex++){
+                        if(txindex.vSpent[voutIndex].IsNull()){
+                            burnedCoins += tx.vout[voutIndex].nValue;
+                        }
+                    }
+                }
+
+            }
+        }
+        // remove coins from money supply
+        pindex->nMoneySupply -= burnedCoins;
+    }
+
     if (!txdb.WriteBlockIndex(CDiskBlockIndex(pindex)))
         return error("Connect() : WriteBlockIndex for pindex failed");
 
