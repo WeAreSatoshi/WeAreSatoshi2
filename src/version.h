@@ -30,11 +30,14 @@ static const int DATABASE_VERSION = 1;
 // network protocol versioning
 //
 
-static const int PROTOCOL_VERSION = 20077;
+static const int PROTOCOL_VERSION = 20078;
 
 // earlier versions not supported and are disconnected
 static const int MIN_PROTO_VERSION = 20077;
 static const int MIN_PROTO_VERSION_FORKV2 = 20077;
+
+static const int MIN_PROTO_VERSION_FORK_COINBURN = 20078;
+
 
 // nTime field added to CAddress, starting with this version;
 // if possible, avoid requesting addresses nodes older than this

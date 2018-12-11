@@ -1378,7 +1378,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
             CTransaction& txPrev = inputs[prevout.hash].second;
 
             // Start checking coinburn after this height
-            if(nBestHeight > 853500){
+            if(nBestHeight > WSX_2_START_COINBURN){
                 // Read block header
                 CBlock block;
                 if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
@@ -2942,6 +2942,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             badVersion = true;
 
         if (nBestHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET) && pfrom->nVersion < MIN_PROTO_VERSION_FORKV2)
+            badVersion = true;
+
+        if (nBestHeight >= (!fTestNet ? WSX_2_START_COINBURN : WSX_2_FORK_TESTNET) && pfrom->nVersion < MIN_PROTO_VERSION_FORK_COINBURN)
             badVersion = true;
 
         if (badVersion)
