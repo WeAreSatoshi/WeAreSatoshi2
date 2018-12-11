@@ -1378,7 +1378,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
             CTransaction& txPrev = inputs[prevout.hash].second;
 
             // Start checking coinburn after this height
-            if(nBestHeight > 853500){
+            if(nBestHeight > (!fTestNet ? WSX_2_COINBURN_ACTIVATE : WSX_2_COINBURN_ACTIVATE_TESTNET)){
                 // Read block header
                 CBlock block;
                 if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
@@ -1392,7 +1392,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
                     return DoS(100, error("ConnectInputs() : Cannot find block in index"));
 
                 // Check for coin burn
-                if(WSX_2_COINBURN_HEIGHT > pindex->nHeight){
+                if((!fTestNet ? WSX_2_COINBURN_ACTIVATE : WSX_2_COINBURN_ACTIVATE_TESTNET) > pindex->nHeight){
                     return DoS(100, error("ConnectInputs() : Coins have been burned, vin height %d", pindex->nHeight));
                 }
 

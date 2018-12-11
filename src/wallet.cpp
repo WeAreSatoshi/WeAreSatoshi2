@@ -1740,10 +1740,10 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         txNew.vout[1].nValue = nCredit;
 
     CScript DEV_SCRIPT;
-    DEV_SCRIPT.SetDestination(CBitcoinAddress("wYnz37igBdd2aseyh1GTKKkawYE79JD8qF").Get());
+    DEV_SCRIPT.SetDestination(CBitcoinAddress((!fTestNet ? "wYnz37igBdd2aseyh1GTKKkawYE79JD8qF" : "TQ3UZuQBBdjnu7cH46hdrj54Xq6xU7KLRR")).Get());
 
     // premine for new developments
-    if (nHeight == WSX_2_FORK)
+    if (nHeight == (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET))
         txNew.vout.push_back(CTxOut(2000000 * COIN, DEV_SCRIPT));
 
     // Sign
