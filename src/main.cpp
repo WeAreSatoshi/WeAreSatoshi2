@@ -1670,7 +1670,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
     // modify money supply to reflect coinburn amount
     // mem intensive, doesnt matter since it runs one time
-    if(pindex->nHeight == WSX_2_START_COINBURN){
+    if(pindex->nHeight == (!fTestNet ? WSX_2_COINBURN_ACTIVATE : WSX_2_COINBURN_ACTIVATE_TESTNET)){
         int64_t burnedCoins = 0;
         for (CBlockIndex* pIndex = pindex; pIndex && pIndex->pprev; pIndex = pIndex->pprev)
         {
@@ -2981,7 +2981,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         if (nBestHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET) && pfrom->nVersion < MIN_PROTO_VERSION_FORKV2)
             badVersion = true;
 
-        if (nBestHeight >= (!fTestNet ? WSX_2_START_COINBURN : WSX_2_FORK_TESTNET) && pfrom->nVersion < MIN_PROTO_VERSION_FORK_COINBURN)
+        if (nBestHeight >= (!fTestNet ? WSX_2_COINBURN_ACTIVATE : WSX_2_COINBURN_ACTIVATE_TESTNET) && pfrom->nVersion < MIN_PROTO_VERSION_FORK_COINBURN)
             badVersion = true;
 
         if (badVersion)
