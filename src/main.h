@@ -37,9 +37,6 @@ static const int WSX_2_COINBURN_HEIGHT_TESTNET = 688;
 static const int WSX_2_COINBURN_ACTIVATE = 858000;
 static const int WSX_2_COINBURN_ACTIVATE_TESTNET = 888;
 
-
-static const float_t WSX_DEV_PERCENT = 0.1; //10% of the inflation
-
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
 static const unsigned int MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
