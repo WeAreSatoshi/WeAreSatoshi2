@@ -364,7 +364,7 @@ bool GetMyExternalIP(CNetAddr& ipRet)
         // replacements, we should ask for volunteers to put this simple
         // php file on their web server that prints the client IP:
         //  <?php echo $_SERVER["REMOTE_ADDR"]; ?>
-        if (nHost == 1)
+        if (nHost == 2)
         {
             addrConnect = CService("91.198.22.70",80); // checkip.dyndns.org
 
@@ -383,19 +383,19 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 
             pszKeyword = "Address:";
         }
-        else if (nHost == 2)
+        else if (nHost == 1)
         {
-            addrConnect = CService("74.208.43.192", 80); // www.showmyip.com
+            addrConnect = CService("147.75.40.2", 80); // icanhazip.com
 
             if (nLookup == 1)
             {
-                CService addrIP("www.showmyip.com", 80, true);
+                CService addrIP("icanhazip.com", 80, true);
                 if (addrIP.IsValid())
                     addrConnect = addrIP;
             }
 
             pszGet = "GET /simple/ HTTP/1.1\r\n"
-                     "Host: www.showmyip.com\r\n"
+                     "Host: www.icanhazip.com\r\n"
                      "User-Agent: WeAreSatoshi\r\n"
                      "Connection: close\r\n"
                      "\r\n";
@@ -878,7 +878,7 @@ void ThreadSocketHandler2(void* parg)
 
                     if (nPos > ReceiveBufferSize()) {
                         if (!pnode->fDisconnect)
-                            printf("socket recv flood control disconnect (%" PRIszu " bytes)\n", vRecv.size());
+                            printf("socket recv flood control disconnect (%"PRIszu" bytes)\n", vRecv.size());
                         pnode->CloseSocketDisconnect();
                     }
                     else {
@@ -1023,16 +1023,10 @@ void ThreadMapPort2(void* parg)
 #ifndef UPNPDISCOVER_SUCCESS
     /* miniupnpc 1.5 */
     devlist = upnpDiscover(2000, multicastif, minissdpdpath, 0);
-#elif MINIUPNPC_API_VERSION < 14
+#else
     /* miniupnpc 1.6 */
     int error = 0;
     devlist = upnpDiscover(2000, multicastif, minissdpdpath, 0, 0, &error);
-#else
-    /* miniupnpc with 7 args */
-    int error = 0;
-    devlist = upnpDiscover(2000, multicastif, minissdpdpath, 0, 0, 2, &error);
-
-
 #endif
 
     struct UPNPUrls urls;
@@ -1149,6 +1143,9 @@ void MapPort()
 // The first name is used as information source for addrman.
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
+    {"node1.wearesatoshi.net", "node1.wearesatoshi.net"},
+    {"node2.wearesatoshi.net", "node2.wearesatoshi.net"},
+    {"node3.wearesatoshi.net", "node3.wearesatoshi.net"},
     {"wsx.dnsseed.crypto2.net", "wsx.dnsseed.crypto2.net"},
 };
 
@@ -1232,7 +1229,7 @@ void DumpAddresses()
     CAddrDB adb;
     adb.Write(addrman);
 
-    printf("Flushed %d addresses to peers.dat  %" PRId64 "ms\n",
+    printf("Flushed %d addresses to peers.dat  %"PRId64"ms\n",
            addrman.size(), GetTimeMillis() - nStart);
 }
 
