@@ -754,7 +754,7 @@ bool AppInit2()
     if (GetBoolArg("-zerotest", false))
     {
         printf("\n=== ZeroCoin tests start ===\n");
-        Test_RunAllTests();
+        //Test_RunAllTests();
         printf("=== ZeroCoin tests end ===\n\n");
     }
 
