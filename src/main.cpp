@@ -1690,7 +1690,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
                         return error("ConnectBlock() : vSpent != vout");
                     }
                     // outpoint is a UTXO and older than WSX_2_COINBURN_HEIGHT
-                    for(int voutIndex = 0; voutIndex < txindex.vSpent.size(); voutIndex++){
+                    for(int voutIndex = 0; voutIndex < (int)txindex.vSpent.size(); voutIndex++){
                         if(txindex.vSpent[voutIndex].IsNull() && pIndex->nHeight <= WSX_2_COINBURN_HEIGHT){
                             burnedCoins += tx.vout[voutIndex].nValue;
                         }
