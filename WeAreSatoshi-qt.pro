@@ -8,7 +8,7 @@ DEFINES += QT_STATIC_BUILD
 CONFIG += no_include_pwd
 CONFIG += thread
 CONFIG += static
-QMAKE_CXXFLAGS = -fpermissive -std=c++11 -DSO
+QMAKE_CXXFLAGS = -fpermissive -DSO
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4) {
