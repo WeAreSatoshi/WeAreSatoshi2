@@ -30,6 +30,7 @@ PoS Interest Schedule:<br />
 1. 5% interest each month for the first 3 months,<br />
 2. 1% per month for the rest of the year,<br />
 3. 3% annually thereafter<br />
+4. New upgrade at block 805k increased interest to 15% removing PoW
 PoS Stake Age: 5 days minimum, 30 days maximum
 
 License
@@ -41,7 +42,7 @@ information or see http://opensource.org/licenses/MIT.
 Copyright
 ---------
 
-Copyright (c) 2014 WeAreSatoshi Developers<br />
+Copyright (c) 2018 WeAreSatoshi Developers<br />
 Copyright (c) 2014 cryptcoin Developers<br />
 Copyright (c) 2013-2014 NovaCoin Developers<br />
 Copyright (c) 2011-2012 PPCoin Developers<br />
