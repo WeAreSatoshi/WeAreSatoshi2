@@ -11,7 +11,7 @@ out collectively by the network. WeAreSatoshi is also the name of the open sourc
 software which enables the use of this currency.
 
 For more information, as well as an immediately useable, binary version of
-the WeAreSatoshi client sofware, see https://bitcointalk.org/index.php?topic=724727.0
+the WeAreSatoshi client sofware, see https://bitcointalk.org/index.php?topic=4938083.0
 
 WeAreSatoshi is a PoW/PoS-based cryptocurrency.
 
