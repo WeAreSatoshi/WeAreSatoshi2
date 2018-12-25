@@ -90,10 +90,7 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("stake",         ValueFromAmount(pwalletMain->GetStake())));
     obj.push_back(Pair("blocks",        (int)nBestHeight));
     obj.push_back(Pair("timeoffset",    (boost::int64_t)GetTimeOffset()));
-    int64_t nMoneySupply = pindexBest != NULL ? pindexBest->nMoneySupply : 0;
-    if (nBestHeight > 162395)
-        nMoneySupply -= 1434472324256379; // Adjust for burned coins in weAreSatoshiXXXXXXXXXXXXXXXXFt9Fxt - See http://explorer.wsx.co.in/address.php?chain=2&addr=weAreSatoshiXXXXXXXXXXXXXXXXFt9Fxt
-    obj.push_back(Pair("moneysupply",   ValueFromAmount(nMoneySupply)));
+    obj.push_back(Pair("moneysupply",   ValueFromAmount(pindexBest->nMoneySupply)));
     obj.push_back(Pair("connections",   (int)vNodes.size()));
     obj.push_back(Pair("proxy",         (proxy.first.IsValid() ? proxy.first.ToStringIPPort() : string())));
     obj.push_back(Pair("ip",            addrSeenByPeer.ToStringIP()));
@@ -790,7 +787,7 @@ Value addmultisigaddress(const Array& params, bool fHelp)
     if ((int)keys.size() < nRequired)
         throw runtime_error(
             strprintf("not enough keys supplied "
-                      "(got %"PRIszu" keys, but need at least %d to redeem)", keys.size(), nRequired));
+                      "(got %" PRIszu" keys, but need at least %d to redeem)", keys.size(), nRequired));
     std::vector<CKey> pubkeys;
     pubkeys.resize(keys.size());
     for (unsigned int i = 0; i < keys.size(); i++)
