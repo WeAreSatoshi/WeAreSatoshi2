@@ -1669,7 +1669,8 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
     // modify money supply to reflect coinburn amount
     // mem intensive, doesnt matter since it runs one time
-    if(pindex->nHeight == (!fTestNet ? WSX_2_COINBURN_ACTIVATE : WSX_2_COINBURN_ACTIVATE_TESTNET)){
+    if(pindex->nHeight == (!fTestNet ? WSX_2_COINBURN_ACTIVATE : WSX_2_COINBURN_ACTIVATE_TESTNET))
+    {
         int64_t burnedCoins = 0;
         for (CBlockIndex* pIndex = pindex; pIndex && pIndex->pprev; pIndex = pIndex->pprev)
         {
@@ -2222,22 +2223,6 @@ bool CBlock::AcceptBlock()
     if (IsProofOfStake() && nHeight < MODIFIER_INTERVAL_SWITCH)
         return DoS(100, error("AcceptBlock() : reject proof-of-stake at height %d", nHeight));
 */
-
-    CScript DEV_SCRIPT;
-    DEV_SCRIPT.SetDestination(CBitcoinAddress((!fTestNet ? "wYnz37igBdd2aseyh1GTKKkawYE79JD8qF" : "TQ3UZuQBBdjnu7cH46hdrj54Xq6xU7KLRR")).Get());
-
-    // Check premine allocation
-    if (nHeight == (!fTestNet ? WSX_2_FORK - 1 : WSX_2_FORK_TESTNET - 1))
-    {
-        const CTxOut output;
-        bool foundPremine = false;
-        if (output.scriptPubKey == DEV_SCRIPT && output.nValue == 2000000 * COIN)
-        {
-            foundPremine = true;
-        }
-        if (!foundPremine)
-            return DoS(100, error("AcceptBlock() : missing premine script"));
-    }
 
     // reject all proof of work blocks
     if (nHeight >= (!fTestNet ? WSX_2_FORK : WSX_2_FORK_TESTNET) && !IsProofOfStake())
