@@ -22,7 +22,7 @@ Ticker Symbol: WSX<br />
 Algorithm: X11 POW/POS<br />
 P2P Port: 8922<br />
 RPC Port: 8923<br />
-Total Coins: 22 million coin cap.<br />
+Total Coins: 40 million coin cap.<br />
 Premine: Coins for WAS v1 to WSX coin swap, 2% for development.<br />
 Block Time: 60 seconds<br />
 PoW Reward: 25 WAS halving every 200,000 blocks until reaching a 1 WAS maintenance reward.<br />
