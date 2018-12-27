@@ -16,10 +16,9 @@
 #include <stdint.h>
 #endif
 
-// does not exist in qt5
 #ifdef Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h>
-// extern bool qt_mac_execute_apple_script(const QString &script, AEDesc *ret);
+extern bool qt_mac_execute_apple_script(const QString &script, AEDesc *ret);
 #endif
 
 // https://wiki.ubuntu.com/NotificationDevelopmentGuidelines recommends at least 128
@@ -266,11 +265,11 @@ void Notificator::notifyGrowl(Class cls, const QString &title, const QString &te
             notificationIcon = QString(" image from location \"file://%1\"").arg(notificationIconFile.fileName());
     }
 
-    // QString quotedTitle(title), quotedText(text);
-    // quotedTitle.replace("\\", "\\\\").replace("\"", "\\");
-    // quotedText.replace("\\", "\\\\").replace("\"", "\\");
-    // QString growlApp(this->mode == Notificator::Growl13 ? "Growl" : "GrowlHelperApp");
-    // qt_mac_execute_apple_script(script.arg(notificationApp, quotedTitle, quotedText, notificationIcon, growlApp), 0);
+    QString quotedTitle(title), quotedText(text);
+    quotedTitle.replace("\\", "\\\\").replace("\"", "\\");
+    quotedText.replace("\\", "\\\\").replace("\"", "\\");
+    QString growlApp(this->mode == Notificator::Growl13 ? "Growl" : "GrowlHelperApp");
+    qt_mac_execute_apple_script(script.arg(notificationApp, quotedTitle, quotedText, notificationIcon, growlApp), 0);
 }
 #endif
 
