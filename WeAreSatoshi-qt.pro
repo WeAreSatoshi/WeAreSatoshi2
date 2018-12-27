@@ -7,17 +7,18 @@ DEFINES += STATIC
 DEFINES += QT_STATIC_BUILD
 CONFIG += no_include_pwd
 CONFIG += thread
-#CONFIG += static
-QMAKE_CXXFLAGS = -fpermissive -std=c++11
+CONFIG += static
+QMAKE_CXXFLAGS = -fpermissive -DSO
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += network
     QT += widgets
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0
 }
 
 unix:QMAKE_RPATHDIR += /usr/lib/
 unix:QMAKE_RPATHDIR += /usr/local/lib/
+#BDB_LIB_SUFFIX=-5.0
 
 # for boost 1.37, add -mt to the boost libraries
 # use: qmake BOOST_LIB_SUFFIX=-mt
@@ -29,6 +30,20 @@ unix:QMAKE_RPATHDIR += /usr/local/lib/
 #    BOOST_INCLUDE_PATH, BOOST_LIB_PATH, BDB_INCLUDE_PATH,
 #    BDB_LIB_PATH, OPENSSL_INCLUDE_PATH and OPENSSL_LIB_PATH respectively
 
+win32 {
+BOOST_LIB_SUFFIX=-mgw81-mt-s-1_55
+BOOST_INCLUDE_PATH=C:/deps/boost_1_55_0
+BOOST_LIB_PATH=C:/deps/boost_1_55_0/stage/lib
+BDB_INCLUDE_PATH=C:/deps/db-5.0.32.NC/build_windows
+BDB_LIB_PATH=C:/deps/db-5.0.32.NC/build_windows
+OPENSSL_INCLUDE_PATH=C:/deps/openssl-OpenSSL_1_0_2n/include
+OPENSSL_LIB_PATH=C:/deps/openssl-OpenSSL_1_0_2n
+MINIUPNPC_INCLUDE_PATH=C:/deps/
+MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
+QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.4
+QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.4/.libs
+}
+
 OBJECTS_DIR = build
 MOC_DIR = build
 UI_DIR = build
@@ -36,8 +51,7 @@ UI_DIR = build
 # use: qmake "RELEASE=1"
 contains(RELEASE, 1) {
     # Mac: compile for maximum compatibility (10.5, 32-bit)
-    #macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.11 -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.11.sdk
-    macx:QMAKE_CXXFLAGS += -arch x86_64
+    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.5 -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.5.sdk
 
     !windows:!macx {
         # Linux: static link
@@ -53,7 +67,6 @@ QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
 # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
 }
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
-win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
 win32:QMAKE_LFLAGS *= -Wl,--large-address-aware -static
 win32:QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 lessThan(QT_MAJOR_VERSION, 5): win32: QMAKE_LFLAGS *= -static
@@ -184,7 +197,6 @@ HEADERS += src/qt/bitcoingui.h \
     src/qt/aboutdialog.h \
     src/qt/editaddressdialog.h \
     src/qt/bitcoinaddressvalidator.h \
-    src/qt/tradingdialog.h \
     src/alert.h \
     src/addrman.h \
     src/base58.h \
@@ -295,7 +307,6 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/aboutdialog.cpp \
     src/qt/editaddressdialog.cpp \
     src/qt/bitcoinaddressvalidator.cpp \
-    src/qt/tradingdialog.cpp \
     src/alert.cpp \
     src/version.cpp \
     src/sync.cpp \
@@ -364,9 +375,7 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/zerocoin/ZeroTest.cpp
 
 RESOURCES += \
-    src/qt/bitcoin.qrc \
-    src/qt/res/images/about.png \
-    src/qt/res/images/splash.png
+    src/qt/bitcoin.qrc
 
 FORMS += \
     src/qt/forms/coincontroldialog.ui \
@@ -380,8 +389,7 @@ FORMS += \
     src/qt/forms/sendcoinsentry.ui \
     src/qt/forms/askpassphrasedialog.ui \
     src/qt/forms/rpcconsole.ui \
-    src/qt/forms/optionsdialog.ui \
-    src/qt/forms/tradingdialog.ui
+    src/qt/forms/optionsdialog.ui
 
 contains(USE_QRCODE, 1) {
 HEADERS += src/qt/qrcodedialog.h
@@ -422,9 +430,8 @@ isEmpty(BOOST_THREAD_LIB_SUFFIX) {
     BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
 }
 
-# brew link --force berkeley-db@4
 isEmpty(BDB_LIB_PATH) {
-    macx:BDB_LIB_PATH = /opt/local/lib
+    macx:BDB_LIB_PATH = /opt/local/lib/db48
 }
 
 isEmpty(BDB_LIB_SUFFIX) {
@@ -432,7 +439,7 @@ isEmpty(BDB_LIB_SUFFIX) {
 }
 
 isEmpty(BDB_INCLUDE_PATH) {
-    macx:BDB_INCLUDE_PATH = /opt/local/include
+    macx:BDB_INCLUDE_PATH = /opt/local/include/db48
 }
 
 isEmpty(BOOST_LIB_PATH) {
@@ -464,7 +471,7 @@ windows:!contains(MINGW_THREAD_BUGFIX, 0) {
 
 macx:HEADERS += src/qt/macdockiconhandler.h
 macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm
-macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit -framework ImageIO
+macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit
 macx:DEFINES += MAC_OSX MSG_NOSIGNAL=0
 macx:ICON = src/qt/res/icons/bitcoin.icns
 macx:TARGET = "WeAreSatoshi-Qt"
@@ -485,7 +492,6 @@ contains(RELEASE, 1) {
     !windows:!macx {
         # Linux: turn dynamic linking back on for c/c++ runtime libraries
         LIBS += -Wl,-Bdynamic
-        LIBS += -lrt -ldl
     }
 }
 
