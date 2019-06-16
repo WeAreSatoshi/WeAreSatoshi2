@@ -41,7 +41,6 @@ information or see http://opensource.org/licenses/MIT.
 Copyright
 ---------
 
-Copyright (c) 2019 NativeCoin Developers<br />
 Copyright (c) 2018 WeAreSatoshi Developers<br />
 Copyright (c) 2014 cryptcoin Developers<br />
 Copyright (c) 2013-2014 NovaCoin Developers<br />
